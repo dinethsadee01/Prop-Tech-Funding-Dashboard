@@ -1,2 +1,59 @@
-# Prop-Tech-Funding-Dashboard
-A professional MERN stack-based Crunchbase dashboard for managing funding data. This project includes role-based authentication, graphical data visualization, and one-time data migration from an Excel sheet. The UI/UX is inspired by  dashboard screenshots, ensuring an intuitive experience. Built as a local tool, it does not require hosting.
+# Funding Data Management Dashboard (MERN Stack)
+
+## Overview
+This project is a professional funding data management dashboard built using the MERN stack. It allows role-based access control, data visualization, and efficient handling of funding information. The application is designed as a local tool, eliminating the need for hosting.
+
+## Features
+- **Role-Based Authentication:** Admins have full CRUD access, while general users have view-only permissions.
+- **Graphical Data Representation:** Interactive charts and graphs for data visualization.
+- **One-Time Data Migration:** Funding data is imported from an Excel sheet.
+- **Modern UI/UX:** Based on provided dashboard screenshots for an intuitive experience.
+
+## Tech Stack
+- **Frontend:** React.js
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB
+- **Authentication:** JWT-based authentication
+
+## Installation & Setup
+### Prerequisites
+Ensure you have the following installed:
+- Node.js & npm ([Download](https://nodejs.org/))
+- MongoDB ([Download](https://www.mongodb.com/try/download/community))
+- Git ([Download](https://git-scm.com/))
+
+### Steps
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+   cd YOUR_REPOSITORY
+   ```
+2. **Install dependencies:**
+   ```sh
+   npm install
+   ```
+3. **Set up environment variables:**
+   Create a `.env` file in the root and add:
+   ```env
+   MONGO_URI=your_mongodb_connection_string
+   JWT_SECRET=your_secret_key
+   ```
+4. **Run the application:**
+   ```sh
+   npm run dev
+   ```
+
+## Usage
+- **Admin Users:** Can add, update, and delete funding data.
+- **General Users:** Can only view funding data.
+- **Data Import:** An initial one-time migration from the provided Excel sheet.
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss.
+
+## Contact
+For any inquiries, reach out at [your email or GitHub issues].
+
