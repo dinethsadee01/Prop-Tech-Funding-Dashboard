@@ -25,8 +25,8 @@ Ensure you have the following installed:
 ### Steps
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-   cd YOUR_REPOSITORY
+   git clone https://github.com/dinethsadee01/Prop-Tech-Funding-Dashboard.git
+   cd Prop-Tech-Funding-Dashboard
    ```
 2. **Install dependencies:**
    ```sh
