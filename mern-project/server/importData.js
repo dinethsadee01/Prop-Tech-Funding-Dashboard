@@ -1,29 +1,31 @@
 const mongoose = require("mongoose");
 const xlsx = require("xlsx");
-const dotenv = require("dotenv");
-const Funding = require("./models/Funding");
+const Funding = require("./models/Funding"); // Import MongoDB Model
+const db = require("./config/db"); // MongoDB Connection
 
-dotenv.config();
+// Load Excel File
+const workbook = xlsx.readFile("Funding Database_DS.xlsx");
+const sheet = workbook.Sheets[workbook.SheetNames[0]];
+const jsonData = xlsx.utils.sheet_to_json(sheet);
 
-mongoose
-    .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log("✅ MongoDB Connected"))
-    .catch((err) => console.error("❌ MongoDB Connection Error:", err));
-
-// Read Excel File
-const workbook = xlsx.readFile("mern-project/server/utils/Funding Database_DS.xlsx");
-const sheetName = workbook.SheetNames[0];
-const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
-
-// Format and Save Data to MongoDB
+// Automatically get column names and insert into MongoDB
 const importData = async () => {
     try {
-        await Funding.deleteMany(); // Clear existing data
-        await Funding.insertMany(data);
+        await Funding.deleteMany(); // Clear old data
+
+        const formattedData = jsonData.map((row) => {
+            let mappedRow = {};
+            Object.keys(row).forEach((key) => {
+                mappedRow[key.replace(/\s+/g, "_").toLowerCase()] = row[key]; // Format keys
+            });
+            return mappedRow;
+        });
+
+        await Funding.insertMany(formattedData);
         console.log("✅ Data Imported Successfully");
         mongoose.disconnect();
     } catch (error) {
-        console.error("❌ Error importing data:", error);
+        console.error("❌ Error:", error);
         mongoose.disconnect();
     }
 };
