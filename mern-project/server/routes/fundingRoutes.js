@@ -1,16 +1,8 @@
 const express = require("express");
-const Funding = require("../models/Funding");
+const { getFundingData } = require("../controllers/FundingController");
 
 const router = express.Router();
 
-// Get all funding data
-router.get("/", async (req, res) => {
-    try {
-        const fundingData = await Funding.find();
-        res.json(fundingData);
-    } catch (error) {
-        res.status(500).json({ error: "Error fetching data" });
-    }
-});
+router.get("/", getFundingData); // Fetch all data dynamically
 
 module.exports = router;
