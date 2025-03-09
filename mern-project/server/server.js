@@ -4,8 +4,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const { MONGO_URI, PORT } = require("./config/Config");
-const fundingRoutes = require("./routes/FundingRoutes");
+const { MONGO_URI, PORT } = require("./config/config");
+const fundingRoutes = require("./routes/fundingRoutes");
 
 const app = express();
 app.use(cors());
