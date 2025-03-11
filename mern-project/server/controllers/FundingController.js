@@ -41,4 +41,37 @@ const deleteFundingData = async (req, res) => {
     }
 };
 
-module.exports = { getFundingData, createFundingData, updateFundingData, deleteFundingData };
+// Search & Filter funding data (Public Access)
+const searchFundingData = async (req, res) => {
+    try {
+        const { name, city, state, minFunding, maxFunding } = req.query;
+        let filter = {};
+        if (name) filter["Name"] = { $regex: name, $options: "i" };
+        if (city) filter["City"] = { $regex: city, $options: "i" };
+        if (state) filter["State"] = { $regex: state, $options: "i" };
+
+        if (minFunding || maxFunding) {
+            const allData = await Funding.find({}, { "Total Funding": 1 });
+
+            // Convert "Total Funding" values to numbers
+            const validIds = allData
+                .filter((doc) => {
+                    if (!doc["Total Funding"]) return false; // Skip missing values
+                    const cleanNumber = Number(doc["Total Funding"].replace(/[$,]/g, ""));
+                    return (
+                        (!minFunding || cleanNumber >= Number(minFunding)) &&
+                        (!maxFunding || cleanNumber <= Number(maxFunding))
+                    );
+                })
+                .map((doc) => doc._id);
+
+            filter._id = { $in: validIds };  // Filter by valid document IDs
+        }
+        const result = await Funding.find(filter);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ message: "Server Error", error });
+    }
+};
+
+module.exports = { getFundingData, createFundingData, updateFundingData, deleteFundingData, searchFundingData };
