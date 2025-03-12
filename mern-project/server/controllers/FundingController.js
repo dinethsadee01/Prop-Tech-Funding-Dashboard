@@ -44,12 +44,28 @@ const deleteFundingData = async (req, res) => {
 // Search & Filter funding data (Public Access)
 const searchFundingData = async (req, res) => {
     try {
-        const { name, city, state, minFunding, maxFunding } = req.query;
+        const { name, city, state, minFunding, maxFunding, fundingRounds, minYear, maxYear } = req.query;
         let filter = {};
         if (name) filter["Name"] = { $regex: name, $options: "i" };
         if (city) filter["City"] = { $regex: city, $options: "i" };
         if (state) filter["State"] = { $regex: state, $options: "i" };
 
+        // Search by Funding Rounds (Must be between 0-9)
+        if (fundingRounds !== undefined) {
+            const parsedRounds = Number(fundingRounds);
+            if (!isNaN(parsedRounds) && parsedRounds >= 0 && parsedRounds <= 9) {
+                filter["# of Funding Rounds"] = parsedRounds;
+            }
+        };
+
+        // Search by Founded Year (Range: minYear - maxYear)
+        if (minYear || maxYear) {
+            filter.Founded = {};
+            if (minYear) filter.Founded.$gte = Number(minYear);
+            if (maxYear) filter.Founded.$lte = Number(maxYear);
+        };
+
+        // Search by Total Funding (Range: minFunding - maxFunding)
         if (minFunding || maxFunding) {
             const allData = await Funding.find({}, { "Total Funding": 1 });
 
@@ -66,7 +82,8 @@ const searchFundingData = async (req, res) => {
                 .map((doc) => doc._id);
 
             filter._id = { $in: validIds };  // Filter by valid document IDs
-        }
+        };
+
         const result = await Funding.find(filter);
         res.json(result);
     } catch (error) {
