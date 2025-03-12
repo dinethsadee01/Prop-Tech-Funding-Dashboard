@@ -44,7 +44,7 @@ const deleteFundingData = async (req, res) => {
 // Search & Filter funding data (Public Access)
 const searchFundingData = async (req, res) => {
     try {
-        const { name, city, state, minFunding, maxFunding, fundingRounds, minYear, maxYear } = req.query;
+        const { name, city, state, minFunding, maxFunding, fundingRounds, minYear, maxYear, minYearsActive, maxYearsActive, minFounders, maxFounders } = req.query;
         let filter = {};
         if (name) filter["Name"] = { $regex: name, $options: "i" };
         if (city) filter["City"] = { $regex: city, $options: "i" };
@@ -64,6 +64,20 @@ const searchFundingData = async (req, res) => {
             if (minYear) filter.Founded.$gte = Number(minYear);
             if (maxYear) filter.Founded.$lte = Number(maxYear);
         };
+
+        // Search by Years Active (Range)
+        if (minYearsActive || maxYearsActive) {
+            filter["Years Active"] = {};
+            if (minYearsActive) filter["Years Active"].$gte = Number(minYearsActive);
+            if (maxYearsActive) filter["Years Active"].$lte = Number(maxYearsActive);
+        };
+
+        // Search by # Founders (Range: 1-20)
+        if (minFounders || maxFounders) {
+            filter["# Founders"] = {};
+            if (minFounders) filter["# Founders"].$gte = Number(minFounders);
+            if (maxFounders) filter["# Founders"].$lte = Number(maxFounders);
+        }
 
         // Search by Total Funding (Range: minFunding - maxFunding)
         if (minFunding || maxFunding) {
