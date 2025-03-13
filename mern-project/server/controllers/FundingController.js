@@ -41,6 +41,34 @@ const deleteFundingData = async (req, res) => {
     }
 };
 
+// Normal Search bar (Public Access)
+const normalSearch = async (req, res) => {
+    try {
+        const { query } = req.query;
+        if (!query) return res.json([]);
+
+        const searchRegex = new RegExp(query, "i"); // Case-insensitive regex
+
+        const filter = {
+            $or: [
+                { Name: searchRegex },
+                { "Prop Type": searchRegex },
+                { AngelList: searchRegex },
+                { Crunchbase: searchRegex },
+                { Domain: searchRegex },
+                { "HQ Address": searchRegex },
+                { City: searchRegex },
+                { State: searchRegex },
+            ],
+        };
+
+        const results = await Funding.find(filter);
+        res.json(results);
+    } catch (error) {
+        res.status(500).json({ message: "Server Error", error });
+    }
+};
+
 // Search & Filter funding data (Public Access)
 const searchFundingData = async (req, res) => {
     try {
@@ -105,4 +133,4 @@ const searchFundingData = async (req, res) => {
     }
 };
 
-module.exports = { getFundingData, createFundingData, updateFundingData, deleteFundingData, searchFundingData };
+module.exports = { getFundingData, createFundingData, updateFundingData, deleteFundingData, searchFundingData, normalSearch };

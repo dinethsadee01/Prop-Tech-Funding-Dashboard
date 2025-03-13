@@ -1,12 +1,13 @@
 const express = require("express");
-const { getFundingData, createFundingData, updateFundingData, deleteFundingData, searchFundingData } = require("../controllers/fundingController");
+const { getFundingData, createFundingData, updateFundingData, deleteFundingData, searchFundingData, normalSearch } = require("../controllers/fundingController");
 const { authenticateUser, authorizeAdmin } = require("../middleware/AuthMiddleware");
 
 const router = express.Router();
 
 // ✅ Public Route: Anyone can view data
 router.get("/", getFundingData);
-router.get("/search", searchFundingData);
+router.get("/search", normalSearch);
+router.get("/adv-search", searchFundingData);
 
 // ✅ Protected Routes: Only Admins can modify data
 router.post("/", authenticateUser, authorizeAdmin, createFundingData);
