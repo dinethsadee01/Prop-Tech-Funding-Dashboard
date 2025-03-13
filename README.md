@@ -55,5 +55,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Just to let you know, pull requests are welcome. For major changes, please open an issue first to discuss.
 
 ## Contact
-For any inquiries, reach out at [dnext2000@gmail.com] or [].
+For any inquiries, reach out via [dnext2000@gmail.com](Email) or [https://github.com/dinethsadee01/Prop-Tech-Funding-Dashboard/issues](GitHubIssues).
 
