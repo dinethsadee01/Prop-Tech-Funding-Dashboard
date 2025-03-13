@@ -1,0 +1,60 @@
+/* Table Styling */
+.funding-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.funding-table th,
+.funding-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.funding-table th {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+.funding-table th.sortable:hover {
+    background-color: #0056b3;
+}
+
+.funding-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.pagination-info {
+    font-size: 14px;
+    color: #555;
+}
+
+.pagination-buttons button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin: 0 5px;
+    font-size: 12px;
+}
+
+.pagination-buttons button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination-buttons button:hover:not(:disabled) {
+    background-color: #0056b3;
+}

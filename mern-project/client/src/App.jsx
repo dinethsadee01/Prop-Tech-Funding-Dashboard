@@ -1,11 +1,11 @@
 import React from "react";
-import FundingDataTable from "./components/FundingDataTable.jsx";
+import FundingTable from "./components/FundingTable.jsx";
 
 function App() {
   return (
     <div>
       <h1>Funding Dashboard</h1>
-      <FundingDataTable />
+      <FundingTable />
     </div>
   );
 }

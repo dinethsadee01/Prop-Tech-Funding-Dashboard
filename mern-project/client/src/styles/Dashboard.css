@@ -1,0 +1,106 @@
+/* Dashboard Container */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Top Navigation Bar */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #ffffff;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+}
+
+.navbar h1 {
+    font-size: 18px;
+    color: #333;
+}
+
+.navbar .admin-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.navbar .admin-button:hover {
+    background-color: #0056b3;
+}
+
+/* Search Bar */
+.search-container {
+    margin-top: 60px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-container input {
+    padding: 8px;
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.advanced-search-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.advanced-search-button:hover {
+    background-color: #218838;
+}
+
+/* Advanced Search Panel */
+.advanced-search-panel {
+    display: none;
+    flex-direction: column;
+    width: 80%;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.advanced-search-panel.active {
+    display: flex;
+}
+
+/* Table Container */
+.table-container {
+    width: 90%;
+    margin-top: 20px;
+}
+
+/* Export Button */
+.export-button {
+    background-color: #ffc107;
+    color: black;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.export-button:hover {
+    background-color: #e0a800;
+}

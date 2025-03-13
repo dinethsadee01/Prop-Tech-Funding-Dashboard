@@ -1,4 +1,5 @@
 const Funding = require("../models/FundingModel");
+const ExportCSV = require("../utils/exportCSV");
 
 // Get all funding data (Public Access)
 const getFundingData = async (req, res) => {
@@ -133,4 +134,32 @@ const searchFundingData = async (req, res) => {
     }
 };
 
-module.exports = { getFundingData, createFundingData, updateFundingData, deleteFundingData, searchFundingData, normalSearch };
+const exportFundingData = async (req, res) => {
+    try {
+        // Get search/filter/sort parameters from the frontend
+        const query = req.query;
+
+        // Find data based on the provided query (if any)
+        const fundingData = await FundingModel.find(query);
+
+        if (!fundingData || fundingData.length === 0) {
+            return res.status(404).json({ message: "No data available to export" });
+        }
+
+        // Extract fields dynamically from the existing data
+        const fields = Object.keys(fundingData[0].toObject());
+
+        // Convert to CSV
+        const { csv, filename } = exportCSV(fundingData, fields, "exported_data.csv");
+
+        // Send CSV response
+        res.setHeader("Content-Type", "text/csv");
+        res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
+        res.status(200).send(csv);
+    } catch (error) {
+        console.error("Error exporting funding data:", error);
+        res.status(500).json({ message: "Failed to export funding data" });
+    }
+};
+
+module.exports = { getFundingData, createFundingData, updateFundingData, deleteFundingData, searchFundingData, normalSearch, exportFundingData };
