@@ -44,16 +44,16 @@ Ensure you have the following installed:
    ```
 
 ## Usage
-- **Admin Users:** Can add, update, and delete funding data.
-- **General Users:** Can only view funding data.
-- **Data Import:** An initial one-time migration from the provided Excel sheet.
+- **Admin Users:** Can add, update, and delete funding data with all general user actions.
+- **General Users:** Can only view funding data, sort, search, filter, and export results as a .csv.
+- **Data Import:** An initial one-time migration from the provided CSV file into the MongoDB Database.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss.
+Just to let you know, pull requests are welcome. For major changes, please open an issue first to discuss.
 
 ## Contact
-For any inquiries, reach out at [your email or GitHub issues].
+For any inquiries, reach out via [Email](mailto:dnext2000@gmail.com) or [GitHubIssues](https://github.com/dinethsadee01/Prop-Tech-Funding-Dashboard/issues).
 
