@@ -1,18 +1,10 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
-import NotFound from "./pages/NotFound";
+import AdminLogin from "./pages/Login";
 
-const AppRouter = () => {
-    return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="*" element={<NotFound />} />
-            </Routes>
-        </Router>
-    );
-};
+const router = createBrowserRouter([
+    { path: "/", element: <Dashboard /> },
+    { path: "/admin", element: <AdminLogin /> }
+]);
 
-export default AppRouter;
+export default router;

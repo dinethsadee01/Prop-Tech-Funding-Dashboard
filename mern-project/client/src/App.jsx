@@ -1,13 +1,15 @@
 import React from "react";
-import FundingTable from "./components/FundingTable.jsx";
+import { Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
+import AdminLogin from "./pages/Login";
 
-function App() {
+const App = () => {
   return (
-    <div>
-      <h1>Funding Dashboard</h1>
-      <FundingTable />
-    </div>
+    <Routes>
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/admin" element={<AdminLogin />} />
+    </Routes>
   );
-}
+};
 
 export default App;
