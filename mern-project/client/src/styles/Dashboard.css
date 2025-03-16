@@ -5,8 +5,16 @@
 
 .top-nav {
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 10px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+
+.dashboard-title {
+    font-weight: bold;
+    color: #333;
 }
 
 .admin-button {
@@ -22,34 +30,11 @@
     background-color: #0056b3;
 }
 
-.search-bar {
+.search-panel {
     display: flex;
+    justify-content: center;
+    margin: 10px 0 10px;
     gap: 10px;
-    margin-bottom: 10px;
-}
-
-.search-bar input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-.search-bar button {
-    padding: 8px 12px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.search-bar button:hover {
-    background-color: #0056b3;
-}
-
-.table-container {
-    margin-top: 20px;
 }
 
 .export-btn {
@@ -59,7 +44,6 @@
     border: none;
     cursor: pointer;
     border-radius: 5px;
-    margin-bottom: 10px;
 }
 
 .export-btn:hover {

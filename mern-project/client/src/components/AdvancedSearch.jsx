@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Range } from "react-range";
 import "../styles/AdvancedSearch.css";
 
 const AdvancedSearch = ({ onSearch }) => {
@@ -7,10 +8,10 @@ const AdvancedSearch = ({ onSearch }) => {
         city: "",
         state: "",
         fundingRounds: "",
-        foundedYear: [1887, 2023],
+        foundedYear: [1887, 2025],
         yearsActive: [0, 200],
         numberOfFounders: "",
-        totalFunding: [0, 1000000000], // Default range
+        totalFunding: [0, 100000000], // Default range
     };
 
     const [filters, setFilters] = useState(defaultFilters);
@@ -27,26 +28,9 @@ const AdvancedSearch = ({ onSearch }) => {
             .catch((err) => console.error("Error fetching max funding:", err));
     }, []);
 
-    // Handle input changes
-    const handleChange = (e) => {
-        setFilters({ ...filters, [e.target.name]: e.target.value });
-    };
-
-    // Handle dropdown selections
-    const handleDropdownChange = (e) => {
-        const value = e.target.value === "N/A" ? "0" : e.target.value; // Treat "N/A" as 0
-        setFilters({ ...filters, [e.target.name]: value });
-    };
-
-    // Handle slider adjustments
-    const handleSliderChange = (name, value, index) => {
-        const updatedRange = [...filters[name]];
-        updatedRange[index] = value;
-
-        // Ensure min <= max
-        if (updatedRange[0] > updatedRange[1]) return;
-
-        setFilters({ ...filters, [name]: updatedRange });
+    // Handle range sliders
+    const handleSliderChange = (name, values) => {
+        setFilters({ ...filters, [name]: values });
     };
 
     const handleSubmit = (e) => {
@@ -57,7 +41,7 @@ const AdvancedSearch = ({ onSearch }) => {
     // Reset filters
     const handleClearFilters = () => {
         setFilters(defaultFilters);
-        onSearch(defaultFilters); // Immediately reset search results
+        onSearch(defaultFilters);
     };
 
     return (
@@ -66,62 +50,83 @@ const AdvancedSearch = ({ onSearch }) => {
             <form onSubmit={handleSubmit}>
                 {/* Text Inputs */}
                 <div className="input-group">
-                    <input type="text" name="name" placeholder="Company Name" value={filters.name} onChange={handleChange} />
-                    <input type="text" name="city" placeholder="City" value={filters.city} onChange={handleChange} />
-                    <input type="text" name="state" placeholder="State" value={filters.state} onChange={handleChange} />
+                    <input type="text" name="name" placeholder="Company Name" value={filters.name} onChange={(e) => setFilters({ ...filters, name: e.target.value })} />
+                    <input type="text" name="city" placeholder="City" value={filters.city} onChange={(e) => setFilters({ ...filters, city: e.target.value })} />
+                    <input type="text" name="state" placeholder="State" value={filters.state} onChange={(e) => setFilters({ ...filters, state: e.target.value })} />
                 </div>
 
-                {/* Dropdowns */}
-                <div className="input-group">
-                    <label>Funding Rounds:</label>
-                    <select name="fundingRounds" value={filters.fundingRounds} onChange={handleDropdownChange}>
-                        <option value="">Any</option>
-                        {Array.from({ length: 10 }, (_, i) => (
-                            <option key={i} value={i}>{i}</option>
-                        ))}
-                        <option value="N/A">N/A</option>
-                    </select>
-
-                    <label>Number of Founders:</label>
-                    <select name="numberOfFounders" value={filters.numberOfFounders} onChange={handleDropdownChange}>
-                        <option value="">Any</option>
-                        {Array.from({ length: 21 }, (_, i) => (
-                            <option key={i} value={i}>{i}</option>
-                        ))}
-                        <option value="N/A">N/A</option>
-                    </select>
-                </div>
-
-                {/* Sliders */}
+                {/* Sliders with Dual Pointers */}
                 <div className="slider-group">
+                    {/* Founded Year Slider */}
                     <label>Founded Year: {filters.foundedYear[0]} - {filters.foundedYear[1]}</label>
-                    <input type="range" min="1887" max="2023" step="1"
-                        value={filters.foundedYear[0]}
-                        onChange={(e) => handleSliderChange("foundedYear", Number(e.target.value), 0)}
-                    />
-                    <input type="range" min="1887" max="2023" step="1"
-                        value={filters.foundedYear[1]}
-                        onChange={(e) => handleSliderChange("foundedYear", Number(e.target.value), 1)}
+                    <Range
+                        step={1}
+                        min={1887}
+                        max={2025}
+                        values={filters.foundedYear}
+                        onChange={(values) => handleSliderChange("foundedYear", values)}
+                        renderTrack={({ props, children }) => (
+                            <div {...props} style={{
+                                ...props.style, height: "6px", width: "25%", marginLeft: "10px",
+                                background: `linear-gradient(to right, #ccc ${((filters.foundedYear[0] - 1887) / (2023 - 1887)) * 100}%, 
+                                              #007bff ${((filters.foundedYear[0] - 1887) / (2023 - 1887)) * 100}%, 
+                                              #007bff ${((filters.foundedYear[1] - 1887) / (2023 - 1887)) * 100}%, 
+                                              #ccc ${((filters.foundedYear[1] - 1887) / (2023 - 1887)) * 100}%)`
+                            }}>
+                                {children}
+                            </div>
+                        )}
+                        renderThumb={({ props }) => (
+                            <div {...props} style={{ ...props.style, height: "16px", width: "16px", backgroundColor: "#007bff", borderRadius: "50%" }} />
+                        )}
                     />
 
+                    {/* Years Active Slider */}
                     <label>Years Active: {filters.yearsActive[0]} - {filters.yearsActive[1]}</label>
-                    <input type="range" min="0" max="200" step="1"
-                        value={filters.yearsActive[0]}
-                        onChange={(e) => handleSliderChange("yearsActive", Number(e.target.value), 0)}
-                    />
-                    <input type="range" min="0" max="200" step="1"
-                        value={filters.yearsActive[1]}
-                        onChange={(e) => handleSliderChange("yearsActive", Number(e.target.value), 1)}
+                    <Range
+                        step={1}
+                        min={0}
+                        max={200}
+                        values={filters.yearsActive}
+                        onChange={(values) => handleSliderChange("yearsActive", values)}
+                        renderTrack={({ props, children }) => (
+                            <div {...props} style={{
+                                ...props.style, height: "6px", width: "25%", marginLeft: "10px",
+                                background: `linear-gradient(to right, #ccc ${((filters.yearsActive[0] - 0) / (200 - 0)) * 100}%, 
+                                              #007bff ${((filters.yearsActive[0] - 0) / (200 - 0)) * 100}%, 
+                                              #007bff ${((filters.yearsActive[1] - 0) / (200 - 0)) * 100}%, 
+                                              #ccc ${((filters.yearsActive[1] - 0) / (200 - 0)) * 100}%)`
+                            }}>
+                                {children}
+                            </div>
+                        )}
+                        renderThumb={({ props }) => (
+                            <div {...props} style={{ ...props.style, height: "16px", width: "16px", backgroundColor: "#007bff", borderRadius: "50%" }} />
+                        )}
                     />
 
+                    {/* Total Funding Slider */}
                     <label>Total Funding: ${filters.totalFunding[0].toLocaleString()} - ${filters.totalFunding[1].toLocaleString()}</label>
-                    <input type="range" min="0" max={filters.totalFunding[1]} step="1000000"
-                        value={filters.totalFunding[0]}
-                        onChange={(e) => handleSliderChange("totalFunding", Number(e.target.value), 0)}
-                    />
-                    <input type="range" min="0" max={filters.totalFunding[1]} step="1000000"
-                        value={filters.totalFunding[1]}
-                        onChange={(e) => handleSliderChange("totalFunding", Number(e.target.value), 1)}
+                    <Range
+                        step={1000000}
+                        min={0}
+                        max={100000000}
+                        values={filters.totalFunding}
+                        onChange={(values) => handleSliderChange("totalFunding", values)}
+                        renderTrack={({ props, children }) => (
+                            <div {...props} style={{
+                                ...props.style, height: "6px", width: "25%", marginLeft: "10px",
+                                background: `linear-gradient(to right, #ccc ${((filters.totalFunding[0] - 0) / (100000000 - 0)) * 100}%, 
+                                              #007bff ${((filters.totalFunding[0] - 0) / (100000000 - 0)) * 100}%, 
+                                              #007bff ${((filters.totalFunding[1] - 0) / (100000000 - 0)) * 100}%, 
+                                              #ccc ${((filters.totalFunding[1] - 0) / (100000000 - 0)) * 100}%)`
+                            }}>
+                                {children}
+                            </div>
+                        )}
+                        renderThumb={({ props }) => (
+                            <div {...props} style={{ ...props.style, height: "16px", width: "16px", backgroundColor: "#007bff", borderRadius: "50%" }} />
+                        )}
                     />
                 </div>
 

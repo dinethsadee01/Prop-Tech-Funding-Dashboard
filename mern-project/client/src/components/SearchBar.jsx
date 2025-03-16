@@ -1,14 +1,7 @@
-import { useState } from "react";
+import React from "react";
+import "../styles/SearchBar.css";
 
-const SearchBar = ({ onSearch, toggleAdvancedSearch }) => {
-    const [query, setQuery] = useState("");
-
-    const handleSearch = () => {
-        if (query.trim()) {
-            onSearch(query);
-        }
-    };
-
+const SearchBar = ({ query, setQuery, onSearch, toggleAdvancedSearch }) => {
     return (
         <div className="search-bar">
             <input
@@ -17,8 +10,10 @@ const SearchBar = ({ onSearch, toggleAdvancedSearch }) => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
             />
-            <button onClick={handleSearch}>🔍 Search</button>
-            <button onClick={toggleAdvancedSearch}>Advanced Search</button>
+            <div className="search-buttons">
+                <button onClick={onSearch}>🔍 Search</button>
+                <button onClick={toggleAdvancedSearch}>Advanced Search</button>
+            </div>
         </div>
     );
 };

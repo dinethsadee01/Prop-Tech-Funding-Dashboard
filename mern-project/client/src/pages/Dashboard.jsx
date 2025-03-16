@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import SearchBar from "../components/SearchBar";
 import AdvancedSearch from "../components/AdvancedSearch";
 import FundingTable from "../components/FundingTable";
+import ExportModal from "../components/ExportModal";
 import "../styles/Dashboard.css";
 import "../styles/FundingTable.css";
 import "../styles/AdvancedSearch.css";
@@ -9,10 +11,11 @@ import "../styles/AdvancedSearch.css";
 const Dashboard = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [advancedFilters, setAdvancedFilters] = useState({});
-    const [fundingData, setFundingData] = useState([]);
+    const [fundingData, setFundingData] = useState([] || []);
     const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
     const [totalRecords, setTotalRecords] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const recordsPerPage = 25; // Number of records per page
 
     useEffect(() => {
@@ -21,7 +24,7 @@ const Dashboard = () => {
 
     const fetchFundingData = async (filters = {}) => {
         try {
-            const response = await axios.get("/api/funding-data/search", {
+            const response = await axios.get("/api/funding-data/", {
                 params: { ...filters, query: searchQuery, page: currentPage, limit: recordsPerPage },
             });
             setFundingData(response.data.records);
@@ -40,6 +43,15 @@ const Dashboard = () => {
         setAdvancedFilters(filters);
         setCurrentPage(1); // Reset to first page
         fetchFundingData(filters);
+    };
+
+    const handleExportClick = () => {
+        setIsModalOpen(true); // Show modal when export button is clicked
+    };
+
+    const handleExportConfirm = () => {
+        setIsModalOpen(false);
+        handleExport();
     };
 
     const handleExport = async () => {
@@ -69,27 +81,32 @@ const Dashboard = () => {
         <div className="dashboard">
             {/* Top Navigation */}
             <div className="top-nav">
+                <h1 className="dashboard-title">PropTech Funding Dashboard</h1>
                 <button className="admin-button">Admin?</button>
             </div>
 
-            {/* Normal Search */}
-            <div className="search-bar">
-                <input
-                    type="text"
-                    placeholder="Search by name, city, state..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+            {/* Normal Search and Export */}
+            <div className="search-panel">
+                <SearchBar
+                    query={searchQuery}
+                    setQuery={setSearchQuery}
+                    onSearch={handleSearch}
+                    toggleAdvancedSearch={() => setIsAdvancedOpen(!isAdvancedOpen)}
                 />
-                <button onClick={handleSearch}>Search</button>
-                <button onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}>Advanced Search</button>
+                <button className="export-btn" onClick={handleExportClick}>Export Data CSV</button>
+                {/* Export Confirmation Modal */}
+                <ExportModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onConfirm={handleExportConfirm}
+                />
             </div>
 
             {/* Advanced Search Panel */}
             {isAdvancedOpen && <AdvancedSearch onSearch={handleAdvancedSearch} />}
 
-            {/* Table & Export Button */}
+            {/* Table Buttons */}
             <div className="table-container">
-                <button className="export-btn" onClick={handleExport}>Export CSV</button>
                 <p className="record-info">{startRecord}-{endRecord} of {totalRecords} records</p>
                 <FundingTable data={fundingData} />
 

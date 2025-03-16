@@ -14,7 +14,7 @@ const FundingTable = ({ data, currentPage, setCurrentPage, totalRecords }) => {
         setSortConfig({ key, direction });
     };
 
-    const sortedData = [...data].sort((a, b) => {
+    const sortedData = Array.isArray(data) ? [...data].sort((a, b) => {
         if (!sortConfig.key) return 0;
         const aValue = a[sortConfig.key] || "";
         const bValue = b[sortConfig.key] || "";
@@ -26,7 +26,7 @@ const FundingTable = ({ data, currentPage, setCurrentPage, totalRecords }) => {
         return sortConfig.direction === "asc"
             ? aValue.toString().localeCompare(bValue.toString())
             : bValue.toString().localeCompare(aValue.toString());
-    });
+    }) : [];
 
     const columns = [
         "Name", "Technology", "Prop Type", "AngelList", "Crunchbase", "Domain", "HQ Address", "City", "State", "Zip",
@@ -74,17 +74,6 @@ const FundingTable = ({ data, currentPage, setCurrentPage, totalRecords }) => {
                     )}
                 </tbody>
             </table>
-
-            {/* Pagination Controls */}
-            <div className="pagination">
-                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-                    ⬅ Prev
-                </button>
-                <span>Page {currentPage} of {totalPages}</span>
-                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-                    Next ➡
-                </button>
-            </div>
         </div>
     );
 };

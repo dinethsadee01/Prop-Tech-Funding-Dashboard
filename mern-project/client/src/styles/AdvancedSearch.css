@@ -1,6 +1,6 @@
 .advanced-search {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 10px;
     padding: 15px;
     border: 1px solid #ccc;
@@ -15,15 +15,45 @@
     margin-bottom: 5px;
 }
 
+.advanced-search label {
+    margin: 5px;
+}
+
 .advanced-search input,
 .advanced-search select {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    width: 100%;
+    width: 30%;
+    margin: 0 5px 10px;
 }
 
-.advanced-search button {
+.slider-group {
+    margin-bottom: 10px;
+}
+
+.slider-group label {
+    display: block;
+    margin: 20px 0px 15px;
+    font-weight: bold;
+}
+
+.slider-group .track {
+    height: 6px;
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.slider-group .thumb {
+    height: 16px;
+    width: 16px;
+    background: #007bff;
+    border-radius: 50%;
+    cursor: grab;
+    margin-bottom: 10px;
+}
+
+.button-group button {
     padding: 8px 12px;
     background-color: #007bff;
     color: white;
@@ -31,9 +61,10 @@
     cursor: pointer;
     border-radius: 5px;
     margin-top: 10px;
+    margin-right: 10px;
 }
 
-.advanced-search button:hover {
+.button-group button:hover {
     background-color: #0056b3;
 }
 
