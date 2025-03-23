@@ -8,10 +8,14 @@ const mongoose = require("mongoose");
 // Import the required files
 const { MONGO_URI, PORT } = require("./config/config");
 const authRoutes = require("./routes/AuthRoutes");
-const fundingRoutes = require("./routes/fundingRoutes");
+const fundingRoutes = require("./routes/FundingRoutes");
 
 const app = express();
-app.use(cors());
+const corsOptions = {
+    origin: "http://localhost:5173",  // Frontend URL
+    credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Connect to MongoDB Atlas

@@ -5,7 +5,7 @@ const ExportCSV = require("../utils/exportCSV");
 const getFundingData = async (req, res) => {
     try {
         const data = await Funding.find();
-        res.json(data);
+        res.json({ records: data, total: data.length });
     } catch (error) {
         res.status(500).json({ message: "Server Error", error });
     }
@@ -46,7 +46,7 @@ const deleteFundingData = async (req, res) => {
 const normalSearch = async (req, res) => {
     try {
         const { query } = req.query;
-        if (!query) return res.json([]);
+        if (!query) return res.json({ records: [], total: 0 }); // Return empty array if no query
 
         const searchRegex = new RegExp(query, "i"); // Case-insensitive regex
 
@@ -63,9 +63,12 @@ const normalSearch = async (req, res) => {
             ],
         };
 
+        console.log("Search Filter:", filter); // ✅ Debugging
+
         const results = await Funding.find(filter);
-        res.json(results);
+        res.json({ records: results, total: results.length });
     } catch (error) {
+        console.error("Error in normalSearch:", error); // ❌ Log error
         res.status(500).json({ message: "Server Error", error });
     }
 };
@@ -128,7 +131,7 @@ const searchFundingData = async (req, res) => {
         };
 
         const result = await Funding.find(filter);
-        res.json(result);
+        res.json({ records: results, total: results.length });
     } catch (error) {
         res.status(500).json({ message: "Server Error", error });
     }

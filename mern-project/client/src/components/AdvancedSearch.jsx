@@ -11,28 +11,34 @@ const AdvancedSearch = ({ onSearch }) => {
         foundedYear: [1887, 2025],
         yearsActive: [0, 200],
         numberOfFounders: "",
-        totalFunding: [0, 100000000], // Default range
+        totalFunding: [0, 4000000000], // Default range
     };
 
     const [filters, setFilters] = useState(defaultFilters);
 
     // Fetch max funding value dynamically
     useEffect(() => {
-        fetch("/api/funding-data/max-funding")
+        fetch("http://localhost:5000/api/funding-data/adv-search?maxFunding")
             .then((res) => res.json())
             .then((data) => {
                 if (data.maxFunding) {
-                    setFilters((prev) => ({ ...prev, totalFunding: [0, data.maxFunding] }));
+                    setFilters((prev) => ({ ...prev, totalFunding: [1, data.maxFunding] }));
                 }
             })
             .catch((err) => console.error("Error fetching max funding:", err));
     }, []);
+
+    //Handle text inputs and dropdowns
+    const handleChange = (e) => {
+        setFilters({ ...filters, [e.target.name]: e.target.value });
+    };
 
     // Handle range sliders
     const handleSliderChange = (name, values) => {
         setFilters({ ...filters, [name]: values });
     };
 
+    // Handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
         onSearch(filters);
@@ -55,6 +61,27 @@ const AdvancedSearch = ({ onSearch }) => {
                     <input type="text" name="state" placeholder="State" value={filters.state} onChange={(e) => setFilters({ ...filters, state: e.target.value })} />
                 </div>
 
+                {/* Dropdowns */}
+                <div className="input-group">
+                    <label>Funding Rounds:</label>
+                    <select name="fundingRounds" value={filters.fundingRounds} onChange={handleChange}>
+                        <option value="">Any</option>
+                        {Array.from({ length: 10 }, (_, i) => (
+                            <option key={i} value={i}>{i}</option>
+                        ))}
+                        <option value="N/A">N/A</option>
+                    </select>
+
+                    <label>Number of Founders:</label>
+                    <select name="numberOfFounders" value={filters.numberOfFounders} onChange={handleChange}>
+                        <option value="">Any</option>
+                        {Array.from({ length: 21 }, (_, i) => (
+                            <option key={i} value={i}>{i}</option>
+                        ))}
+                        <option value="N/A">N/A</option>
+                    </select>
+                </div>
+
                 {/* Sliders with Dual Pointers */}
                 <div className="slider-group">
                     {/* Founded Year Slider */}
@@ -68,10 +95,10 @@ const AdvancedSearch = ({ onSearch }) => {
                         renderTrack={({ props, children }) => (
                             <div {...props} style={{
                                 ...props.style, height: "6px", width: "25%", marginLeft: "10px",
-                                background: `linear-gradient(to right, #ccc ${((filters.foundedYear[0] - 1887) / (2023 - 1887)) * 100}%, 
-                                              #007bff ${((filters.foundedYear[0] - 1887) / (2023 - 1887)) * 100}%, 
-                                              #007bff ${((filters.foundedYear[1] - 1887) / (2023 - 1887)) * 100}%, 
-                                              #ccc ${((filters.foundedYear[1] - 1887) / (2023 - 1887)) * 100}%)`
+                                background: `linear-gradient(to right, #ccc ${((filters.foundedYear[0] - 1887) / (2025 - 1887)) * 100}%, 
+                                              #007bff ${((filters.foundedYear[0] - 1887) / (2025 - 1887)) * 100}%, 
+                                              #007bff ${((filters.foundedYear[1] - 1887) / (2025 - 1887)) * 100}%, 
+                                              #ccc ${((filters.foundedYear[1] - 1887) / (2025 - 1887)) * 100}%)`
                             }}>
                                 {children}
                             </div>
@@ -110,16 +137,16 @@ const AdvancedSearch = ({ onSearch }) => {
                     <Range
                         step={1000000}
                         min={0}
-                        max={100000000}
+                        max={4000000000}
                         values={filters.totalFunding}
                         onChange={(values) => handleSliderChange("totalFunding", values)}
                         renderTrack={({ props, children }) => (
                             <div {...props} style={{
                                 ...props.style, height: "6px", width: "25%", marginLeft: "10px",
-                                background: `linear-gradient(to right, #ccc ${((filters.totalFunding[0] - 0) / (100000000 - 0)) * 100}%, 
-                                              #007bff ${((filters.totalFunding[0] - 0) / (100000000 - 0)) * 100}%, 
-                                              #007bff ${((filters.totalFunding[1] - 0) / (100000000 - 0)) * 100}%, 
-                                              #ccc ${((filters.totalFunding[1] - 0) / (100000000 - 0)) * 100}%)`
+                                background: `linear-gradient(to right, #ccc ${((filters.totalFunding[0] - 0) / (4000000000 - 0)) * 100}%, 
+                                              #007bff ${((filters.totalFunding[0] - 0) / (4000000000 - 0)) * 100}%, 
+                                              #007bff ${((filters.totalFunding[1] - 0) / (4000000000 - 0)) * 100}%, 
+                                              #ccc ${((filters.totalFunding[1] - 0) / (4000000000 - 0)) * 100}%)`
                             }}>
                                 {children}
                             </div>

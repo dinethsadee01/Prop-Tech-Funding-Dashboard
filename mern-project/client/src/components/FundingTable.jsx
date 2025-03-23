@@ -40,11 +40,11 @@ const FundingTable = ({ data, currentPage, setCurrentPage, totalRecords }) => {
         "Acquirer"
     ];
 
-    const handlePageChange = (newPage) => {
-        if (newPage >= 1 && newPage <= totalPages) {
-            setCurrentPage(newPage);
-        }
-    };
+    // const handlePageChange = (newPage) => {
+    //     if (newPage >= 1 && newPage <= totalPages) {
+    //         setCurrentPage(newPage);
+    //     }
+    // };
 
     return (
         <div className="funding-table-container">
