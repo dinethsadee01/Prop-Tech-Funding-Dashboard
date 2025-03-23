@@ -4,8 +4,14 @@ const ExportCSV = require("../utils/exportCSV");
 // Get all funding data (Public Access)
 const getFundingData = async (req, res) => {
     try {
-        const data = await Funding.find();
-        res.json({ records: data, total: data.length });
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 25;
+        const skip = (page - 1) * limit;
+
+        const total = await Funding.countDocuments();
+        const data = await Funding.find().skip(skip).limit(limit);
+        
+        res.json({ records: data, total: total });
     } catch (error) {
         res.status(500).json({ message: "Server Error", error });
     }
@@ -45,7 +51,9 @@ const deleteFundingData = async (req, res) => {
 // Normal Search bar (Public Access)
 const normalSearch = async (req, res) => {
     try {
-        const { query } = req.query;
+        const { query, page = 1, limit = 25 } = req.query;
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+
         if (!query) return res.json({ records: [], total: 0 }); // Return empty array if no query
 
         const searchRegex = new RegExp(query, "i"); // Case-insensitive regex
@@ -65,8 +73,10 @@ const normalSearch = async (req, res) => {
 
         console.log("Search Filter:", filter); // ✅ Debugging
 
-        const results = await Funding.find(filter);
-        res.json({ records: results, total: results.length });
+        const total = await Funding.countDocuments(filter);
+        const results = await Funding.find(filter).skip(skip).limit(parseInt(limit));
+        
+        res.json({ records: results, total: total });
     } catch (error) {
         console.error("Error in normalSearch:", error); // ❌ Log error
         res.status(500).json({ message: "Server Error", error });
@@ -76,8 +86,12 @@ const normalSearch = async (req, res) => {
 // Search & Filter funding data (Public Access)
 const searchFundingData = async (req, res) => {
     try {
-        const { name, city, state, minFunding, maxFunding, fundingRounds, minYear, maxYear, minYearsActive, maxYearsActive, minFounders, maxFounders } = req.query;
+        const { name, city, state, minFunding, maxFunding, fundingRounds, minYear, maxYear, 
+               minYearsActive, maxYearsActive, minFounders, maxFounders, page = 1, limit = 25 } = req.query;
+        
+        const skip = (parseInt(page) - 1) * parseInt(limit);
         let filter = {};
+        
         if (name) filter["Name"] = { $regex: name, $options: "i" };
         if (city) filter["City"] = { $regex: city, $options: "i" };
         if (state) filter["State"] = { $regex: state, $options: "i" };
@@ -130,8 +144,10 @@ const searchFundingData = async (req, res) => {
             filter._id = { $in: validIds };  // Filter by valid document IDs
         };
 
-        const result = await Funding.find(filter);
-        res.json({ records: results, total: results.length });
+        const total = await Funding.countDocuments(filter);
+        const results = await Funding.find(filter).skip(skip).limit(parseInt(limit));
+        
+        res.json({ records: results, total: total });
     } catch (error) {
         res.status(500).json({ message: "Server Error", error });
     }

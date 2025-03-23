@@ -10,9 +10,15 @@ const api = axios.create({
 });
 
 // Fetch funding data with pagination and filters
-export const fetchFundingData = async (params) => {
+export const fetchFundingData = async (params = {}) => {
     try {
-        const response = await api.get("/funding-data", { params });
+        const response = await api.get("/funding-data", { 
+            params: {
+                ...params,
+                page: params.page || 1,
+                limit: params.limit || 25
+            } 
+        });
         return response.data;
     } catch (error) {
         console.error("Error fetching funding data:", error);
@@ -21,9 +27,11 @@ export const fetchFundingData = async (params) => {
 };
 
 // Normal search
-export const searchFundingData = async (query) => {
+export const searchFundingData = async (query, page = 1, limit = 25) => {
     try {
-        const response = await api.get("/funding-data/search", { params: { query } });
+        const response = await api.get("/funding-data/search", { 
+            params: { query, page, limit } 
+        });
         console.log("Search query done", response.data); // ✅ Debugging
         return response.data;
     } catch (error) {
@@ -33,9 +41,11 @@ export const searchFundingData = async (query) => {
 };
 
 // Advanced search
-export const advancedSearchFundingData = async (filters) => {
+export const advancedSearchFundingData = async (filters, page = 1, limit = 25) => {
     try {
-        const response = await api.get("/funding-data/adv-search", { params: { filters } });
+        const response = await api.get("/funding-data/adv-search", { 
+            params: { ...filters, page, limit } 
+        });
         return response.data;
     } catch (error) {
         console.error("Error performing advanced search:", error);
@@ -47,7 +57,7 @@ export const advancedSearchFundingData = async (filters) => {
 export const exportFundingData = async (filters) => {
     try {
         const response = await api.get("/funding-data/export", {
-            params: { ...filters, query: searchQuery },
+            params: filters,
             responseType: "blob",
         });
         const url = window.URL.createObjectURL(new Blob([response.data]));
