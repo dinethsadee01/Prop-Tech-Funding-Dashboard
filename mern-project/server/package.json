@@ -26,5 +26,9 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
+  },
+  "volta": {
+    "node": "22.14.0",
+    "npm": "10.8.2"
   }
 }

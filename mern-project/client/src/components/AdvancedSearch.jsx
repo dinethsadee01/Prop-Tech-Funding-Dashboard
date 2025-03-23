@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Range } from "react-range";
 import "../styles/AdvancedSearch.css";
 
@@ -17,16 +17,16 @@ const AdvancedSearch = ({ onSearch }) => {
     const [filters, setFilters] = useState(defaultFilters);
 
     // Fetch max funding value dynamically
-    useEffect(() => {
-        fetch("http://localhost:5000/api/funding-data/adv-search?maxFunding")
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.maxFunding) {
-                    setFilters((prev) => ({ ...prev, totalFunding: [1, data.maxFunding] }));
-                }
-            })
-            .catch((err) => console.error("Error fetching max funding:", err));
-    }, []);
+    // useEffect(() => {
+    //     fetch("http://localhost:5000/api/funding-data/adv-search?maxFunding")
+    //         .then((res) => res.json())
+    //         .then((data) => {
+    //             if (data.maxFunding) {
+    //                 setFilters((prev) => ({ ...prev, totalFunding: [1, data.maxFunding] }));
+    //             }
+    //         })
+    //         .catch((err) => console.error("Error fetching max funding:", err));
+    // }, []);
 
     //Handle text inputs and dropdowns
     const handleChange = (e) => {
