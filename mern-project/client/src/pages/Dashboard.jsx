@@ -43,11 +43,9 @@ const Dashboard = () => {
                         minYearsActive: advancedFilters.yearsActive?.[0],
                         maxYearsActive: advancedFilters.yearsActive?.[1],
                         minFounders: advancedFilters.numberOfFounders[0],
-                        maxFounders: advancedFilters.numberOfFounders[1],
-                        sortBy: sortConfig.key,
-                        sortDirection: sortConfig.direction
+                        maxFounders: advancedFilters.numberOfFounders[1]
                     };
-                    const data = await advancedSearchFundingData(payload, currentPage, recordsPerPage);
+                    const data = await advancedSearchFundingData(payload, currentPage, recordsPerPage, sortConfig.key, sortConfig.direction);
                     setFundingData(data.records);
                     setTotalRecords(data.total);
                 } else {
@@ -79,23 +77,23 @@ const Dashboard = () => {
     const handleAdvancedSearch = async (filters) => {
         setAdvancedFilters(filters);
         setCurrentPage(1); // Reset to first page
-        const payload = {
-            name: filters.name,
-            city: filters.city,
-            state: filters.state,
-            minFunding: filters.totalFunding[0],
-            maxFunding: filters.totalFunding[1],
-            fundingRounds: filters.fundingRounds,
-            minYear: filters.foundedYear[0],
-            maxYear: filters.foundedYear[1],
-            minYearsActive: filters.yearsActive[0],
-            maxYearsActive: filters.yearsActive[1],
-            minFounders: filters.numberOfFounders[0],
-            maxFounders: filters.numberOfFounders[1]
-        };
-        const data = await advancedSearchFundingData(payload, 1, recordsPerPage);
-        setFundingData(data.records);
-        setTotalRecords(data.total);
+        // const payload = {
+        //     name: filters.name,
+        //     city: filters.city,
+        //     state: filters.state,
+        //     minFunding: filters.totalFunding[0],
+        //     maxFunding: filters.totalFunding[1],
+        //     fundingRounds: filters.fundingRounds,
+        //     minYear: filters.foundedYear[0],
+        //     maxYear: filters.foundedYear[1],
+        //     minYearsActive: filters.yearsActive[0],
+        //     maxYearsActive: filters.yearsActive[1],
+        //     minFounders: filters.numberOfFounders[0],
+        //     maxFounders: filters.numberOfFounders[1]
+        // };
+        // const data = await advancedSearchFundingData(payload, 1, recordsPerPage);
+        // setFundingData(data.records);
+        // setTotalRecords(data.total);
     };
 
     const handleExportClick = () => {

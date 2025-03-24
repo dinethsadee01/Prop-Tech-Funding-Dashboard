@@ -30,7 +30,7 @@ const AdvancedSearch = ({ onSearch }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const activeFilters = Object.keys(filters).reduce((acc, key) => {
-            if (JSON.stringify(filters[key]) !== JSON.stringify(defaultFilters[key])) {
+            if (filters[key] !== defaultFilters[key]) {
                 acc[key] = filters[key];
             }
             return acc;
