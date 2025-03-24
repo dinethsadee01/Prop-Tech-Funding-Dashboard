@@ -9,6 +9,51 @@ const api = axios.create({
     },
 });
 
+// Add auth token to requests if available
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+// Authentication API methods
+export const registerUser = async (userData) => {
+    try {
+        const response = await api.post("/auth/register", userData);
+        return response.data;
+    } catch (error) {
+        console.error("Registration error:", error.response?.data || error.message);
+        throw error;
+    }
+};
+
+export const loginUser = async (credentials) => {
+    try {
+        const response = await api.post("/auth/login", credentials);
+        // Store token in localStorage
+        if (response.data.token) {
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+        }
+        return response.data;
+    } catch (error) {
+        console.error("Login error:", error.response?.data || error.message);
+        throw error;
+    }
+};
+
+export const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+};
+
 // Fetch funding data with pagination and filters
 export const fetchFundingData = async (params = {}) => {
     try {

@@ -1,43 +1,84 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { registerUser, loginUser } from "../services/api";
 import "../styles/Login.css";
 
 const Login = () => {
     const [isRegistering, setIsRegistering] = useState(false);
-    const [formData, setFormData] = useState({ email: "", password: "", confirmPassword: "" });
+    const [formData, setFormData] = useState({ 
+        name: "", 
+        email: "", 
+        password: "", 
+        confirmPassword: "",
+        role: "user" 
+    });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (isRegistering) {
-            if (formData.password !== formData.confirmPassword) {
-                alert("Passwords do not match!");
-                return;
+        setError(null);
+        setLoading(true);
+        
+        try {
+            if (isRegistering) {
+                if (formData.password !== formData.confirmPassword) {
+                    setError("Passwords do not match!");
+                    setLoading(false);
+                    return;
+                }
+                
+                // Prepare registration data
+                const registrationData = {
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                    role: formData.role || "user"
+                };
+                
+                await registerUser(registrationData);
+                alert("Registration successful! Please login.");
+                setIsRegistering(false);
+                setFormData({ ...formData, password: "", confirmPassword: "" });
+            } else {
+                // Login
+                const { user, token } = await loginUser({
+                    email: formData.email,
+                    password: formData.password
+                });
+                
+                console.log("Login successful", user);
+                navigate("/");
             }
-            console.log("Registering:", formData);
-        } else {
-            console.log("Logging in:", formData);
+        } catch (err) {
+            setError(err.response?.data?.message || "An error occurred. Please try again.");
+            console.error("Authentication error:", err);
+        } finally {
+            setLoading(false);
         }
-        navigate("/");
     };
 
     return (
         <div className="auth-container">
             <div className="auth-box">
                 <h2>{isRegistering ? "Register" : "Login"}</h2>
+                {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>
-                    {isRegistering && (<input
-                        type="username"
-                        name="username"
-                        placeholder="Username"
-                        value={formData.username}
-                        onChange={handleChange}
-                        required
-                    />)}
+                    {isRegistering && (
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Full Name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            required
+                        />
+                    )}
                     <input
                         type="email"
                         name="email"
@@ -64,17 +105,19 @@ const Login = () => {
                                 onChange={handleChange}
                                 required
                             />
-                            <input
-                                type="role"
+                            <select
                                 name="role"
-                                placeholder="Role"
                                 value={formData.role}
                                 onChange={handleChange}
-                                required
-                            />
+                            >
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
                         </>
                     )}
-                    <button type="submit">{isRegistering ? "Register" : "Login"}</button>
+                    <button type="submit" disabled={loading}>
+                        {loading ? "Processing..." : isRegistering ? "Register" : "Login"}
+                    </button>
                 </form>
                 <p onClick={() => setIsRegistering(!isRegistering)}>
                     {isRegistering ? "Already have an account? Login" : "Don't have an account? Register"}
