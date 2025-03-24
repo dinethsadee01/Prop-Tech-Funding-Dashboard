@@ -1,32 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import "../styles/FundingTable.css";
 
-const FundingTable = ({ data, currentPage, setCurrentPage, totalRecords }) => {
-    const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
-    const recordsPerPage = 25;
-    const totalPages = Math.ceil(totalRecords / recordsPerPage);
-
+const FundingTable = ({ data, onSort, sortConfig }) => {
+    // Remove local sorting logic and use parent's sortConfig
     const handleSort = (key) => {
         let direction = "asc";
         if (sortConfig.key === key && sortConfig.direction === "asc") {
             direction = "desc";
         }
-        setSortConfig({ key, direction });
+        onSort(key, direction);
     };
-
-    const sortedData = Array.isArray(data) ? [...data].sort((a, b) => {
-        if (!sortConfig.key) return 0;
-        const aValue = a[sortConfig.key] || "";
-        const bValue = b[sortConfig.key] || "";
-
-        if (typeof aValue === "number" && typeof bValue === "number") {
-            return sortConfig.direction === "asc" ? aValue - bValue : bValue - aValue;
-        }
-
-        return sortConfig.direction === "asc"
-            ? aValue.toString().localeCompare(bValue.toString())
-            : bValue.toString().localeCompare(aValue.toString());
-    }) : [];
 
     const columns = [
         "Name", "Technology", "Prop Type", "AngelList", "Crunchbase", "Domain", "HQ Address", "City", "State", "Zip",
@@ -39,12 +22,6 @@ const FundingTable = ({ data, currentPage, setCurrentPage, totalRecords }) => {
         "Unknown Series Date", "Unknown Series $", "Non-Dilutive Round Date", "Non-Dilutive Round $", "Exit Date", "Exit $",
         "Acquirer"
     ];
-
-    // const handlePageChange = (newPage) => {
-    //     if (newPage >= 1 && newPage <= totalPages) {
-    //         setCurrentPage(newPage);
-    //     }
-    // };
 
     return (
         <div className="funding-table-container">
@@ -59,8 +36,8 @@ const FundingTable = ({ data, currentPage, setCurrentPage, totalRecords }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {sortedData.length > 0 ? (
-                        sortedData.map((row, index) => (
+                    {data.length > 0 ? (
+                        data.map((row, index) => (
                             <tr key={index}>
                                 {columns.map((col) => (
                                     <td key={col}>{row[col] || "-"}</td>

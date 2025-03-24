@@ -10,23 +10,11 @@ const AdvancedSearch = ({ onSearch }) => {
         fundingRounds: "",
         foundedYear: [1887, 2025],
         yearsActive: [0, 200],
-        numberOfFounders: "",
-        totalFunding: [0, 4000000000], // Default range
+        numberOfFounders: [0, 20],
+        totalFunding: [0, 4000000000],
     };
 
     const [filters, setFilters] = useState(defaultFilters);
-
-    // Fetch max funding value dynamically
-    // useEffect(() => {
-    //     fetch("http://localhost:5000/api/funding-data/adv-search?maxFunding")
-    //         .then((res) => res.json())
-    //         .then((data) => {
-    //             if (data.maxFunding) {
-    //                 setFilters((prev) => ({ ...prev, totalFunding: [1, data.maxFunding] }));
-    //             }
-    //         })
-    //         .catch((err) => console.error("Error fetching max funding:", err));
-    // }, []);
 
     //Handle text inputs and dropdowns
     const handleChange = (e) => {
@@ -41,13 +29,19 @@ const AdvancedSearch = ({ onSearch }) => {
     // Handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSearch(filters);
+        const activeFilters = Object.keys(filters).reduce((acc, key) => {
+            if (JSON.stringify(filters[key]) !== JSON.stringify(defaultFilters[key])) {
+                acc[key] = filters[key];
+            }
+            return acc;
+        }, {});
+        onSearch(activeFilters);
     };
 
     // Reset filters
     const handleClearFilters = () => {
         setFilters(defaultFilters);
-        onSearch(defaultFilters);
+        onSearch({});
     };
 
     return (
@@ -65,17 +59,8 @@ const AdvancedSearch = ({ onSearch }) => {
                 <div className="input-group">
                     <label>Funding Rounds:</label>
                     <select name="fundingRounds" value={filters.fundingRounds} onChange={handleChange}>
-                        <option value="">Any</option>
+                        <option value="">All</option>
                         {Array.from({ length: 10 }, (_, i) => (
-                            <option key={i} value={i}>{i}</option>
-                        ))}
-                        <option value="N/A">N/A</option>
-                    </select>
-
-                    <label>Number of Founders:</label>
-                    <select name="numberOfFounders" value={filters.numberOfFounders} onChange={handleChange}>
-                        <option value="">Any</option>
-                        {Array.from({ length: 21 }, (_, i) => (
                             <option key={i} value={i}>{i}</option>
                         ))}
                         <option value="N/A">N/A</option>
@@ -84,6 +69,30 @@ const AdvancedSearch = ({ onSearch }) => {
 
                 {/* Sliders with Dual Pointers */}
                 <div className="slider-group">
+                    {/* No of Founders Slider */}
+                    <label>Number of Founders: {filters.numberOfFounders[0]} - {filters.numberOfFounders[1]}</label>
+                    <Range
+                        step={1}
+                        min={0}
+                        max={20}
+                        values={filters.numberOfFounders}
+                        onChange={(values) => handleSliderChange("numberOfFounders", values)}
+                        renderTrack={({ props, children }) => (
+                            <div {...props} style={{
+                                ...props.style, height: "6px", width: "25%", marginLeft: "10px",
+                                background: `linear-gradient(to right, #ccc ${((filters.numberOfFounders[0] - 0) / (20 - 0)) * 100}%, 
+                                              #007bff ${((filters.numberOfFounders[0] - 0) / (20 - 0)) * 100}%, 
+                                              #007bff ${((filters.numberOfFounders[1] - 0) / (20 - 0)) * 100}%, 
+                                              #ccc ${((filters.numberOfFounders[1] - 0) / (20 - 0)) * 100}%)`
+                            }}>
+                                {children}
+                            </div>
+                        )}
+                        renderThumb={({ props }) => (
+                            <div {...props} style={{ ...props.style, height: "16px", width: "16px", backgroundColor: "#007bff", borderRadius: "50%" }} />
+                        )}
+                    />
+
                     {/* Founded Year Slider */}
                     <label>Founded Year: {filters.foundedYear[0]} - {filters.foundedYear[1]}</label>
                     <Range

@@ -18,78 +18,56 @@ const Dashboard = () => {
     const [totalRecords, setTotalRecords] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
     const navigate = useNavigate();
     const recordsPerPage = 25; // Number of records per page
 
-    // useEffect(() => {
-    //     // fetchFundingData();
-    //     const fetchFundingData1 = async (filters = {}) => {
-    //         try {
-    //             const res = await fetchFundingData({
-    //                 ...filters,
-    //             });
-    //             // axios.get("http://localhost:5000/api/funding-data", {
-    //             //     params: { ...filters, query: searchQuery, page: currentPage, limit: recordsPerPage },
-    //             // });
-    //             setFundingData(res.records);
-    //             setTotalRecords(res.total);
-    //         } catch (error) {
-    //             console.error("Error fetching data:", error);
-    //         }
-    //     };
-    //     fetchFundingData1();
-    // }, [currentPage]); // Refetch when page changes
-
-    // useCallback(async () => {
-    //     try {
-    //         const res = await fetchFundingData();
-    //         setFundingData(res.records);
-    //         setTotalRecords(res.total);
-    //     } catch (error) {
-    //         console.error("Error fetching data:", error);
-    //     }
-    // }, [currentPage]);
-
-        // Replace useCallback with useEffect to properly load data when page changes
-        useEffect(() => {
-            const loadData = async () => {
-                try {
-                    // If we have active search or filters, apply them with pagination
-                    if (searchQuery) {
-                        const data = await searchFundingData(searchQuery, currentPage, recordsPerPage);
-                        setFundingData(data.records);
-                        setTotalRecords(data.total);
-                    } else if (Object.keys(advancedFilters).length > 0) {
-                        const payload = {
-                            name: advancedFilters.name,
-                            city: advancedFilters.city,
-                            state: advancedFilters.state,
-                            minFunding: advancedFilters.totalFunding?.[0],
-                            maxFunding: advancedFilters.totalFunding?.[1],
-                            fundingRounds: advancedFilters.fundingRounds,
-                            minYear: advancedFilters.foundedYear?.[0],
-                            maxYear: advancedFilters.foundedYear?.[1],
-                            minYearsActive: advancedFilters.yearsActive?.[0],
-                            maxYearsActive: advancedFilters.yearsActive?.[1],
-                            minFounders: advancedFilters.numberOfFounders,
-                        };
-                        const data = await advancedSearchFundingData(payload, currentPage, recordsPerPage);
-                        setFundingData(data.records);
-                        setTotalRecords(data.total);
-                    } else {
-                        // Default data load with pagination
-                        const res = await fetchFundingData({ page: currentPage, limit: recordsPerPage });
-                        setFundingData(res.records);
-                        setTotalRecords(res.total);
-                    }
-                } catch (error) {
-                    console.error("Error fetching data:", error);
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                // If we have active search or filters, apply them with pagination
+                if (searchQuery) {
+                    const data = await searchFundingData(searchQuery, currentPage, recordsPerPage, sortConfig.key, sortConfig.direction);
+                    setFundingData(data.records);
+                    setTotalRecords(data.total);
+                } else if (Object.keys(advancedFilters).length > 0) {
+                    const payload = {
+                        name: advancedFilters.name,
+                        city: advancedFilters.city,
+                        state: advancedFilters.state,
+                        minFunding: advancedFilters.totalFunding?.[0],
+                        maxFunding: advancedFilters.totalFunding?.[1],
+                        fundingRounds: advancedFilters.fundingRounds,
+                        minYear: advancedFilters.foundedYear?.[0],
+                        maxYear: advancedFilters.foundedYear?.[1],
+                        minYearsActive: advancedFilters.yearsActive?.[0],
+                        maxYearsActive: advancedFilters.yearsActive?.[1],
+                        minFounders: advancedFilters.numberOfFounders[0],
+                        maxFounders: advancedFilters.numberOfFounders[1],
+                        sortBy: sortConfig.key,
+                        sortDirection: sortConfig.direction
+                    };
+                    const data = await advancedSearchFundingData(payload, currentPage, recordsPerPage);
+                    setFundingData(data.records);
+                    setTotalRecords(data.total);
+                } else {
+                    // Default data load with pagination and sorting
+                    const res = await fetchFundingData({ 
+                        page: currentPage, 
+                        limit: recordsPerPage,
+                        sortBy: sortConfig.key,
+                        sortDirection: sortConfig.direction
+                    });
+                    setFundingData(res.records);
+                    setTotalRecords(res.total);
                 }
-            };
-            
-            loadData();
-        }, [currentPage, searchQuery, advancedFilters]);
-
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        
+        loadData();
+    }, [currentPage, searchQuery, advancedFilters, sortConfig]);
 
     const handleSearch = async () => {
         setCurrentPage(1); // Reset to first page
@@ -112,7 +90,8 @@ const Dashboard = () => {
             maxYear: filters.foundedYear[1],
             minYearsActive: filters.yearsActive[0],
             maxYearsActive: filters.yearsActive[1],
-            minFounders: filters.numberOfFounders,
+            minFounders: filters.numberOfFounders[0],
+            maxFounders: filters.numberOfFounders[1]
         };
         const data = await advancedSearchFundingData(payload, 1, recordsPerPage);
         setFundingData(data.records);
@@ -126,6 +105,10 @@ const Dashboard = () => {
     const handleExportConfirm = () => {
         setIsModalOpen(false);
         exportFundingData({ ...advancedFilters, query: searchQuery });
+    };
+
+    const handleSort = (key, direction) => {
+        setSortConfig({ key, direction });
     };
 
     const totalPages = Math.ceil(totalRecords / recordsPerPage);
@@ -163,7 +146,11 @@ const Dashboard = () => {
             {/* Table Buttons */}
             <div className="table-container">
                 <p className="record-info">{totalRecords > 0 ? `${startRecord}-${endRecord} of ${totalRecords} records` : "No records found"}</p>
-                <FundingTable data={fundingData} />
+                <FundingTable 
+                    data={fundingData} 
+                    onSort={handleSort}
+                    sortConfig={sortConfig}
+                />
 
                 {/* Pagination Controls */}
                 <div className="pagination">

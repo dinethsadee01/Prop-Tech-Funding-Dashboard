@@ -1,19 +1,108 @@
 const Funding = require("../models/FundingModel");
 const ExportCSV = require("../utils/exportCSV");
 
+// Helper function to check if a field is a currency field
+const isCurrencyField = (field) => {
+    const currencyFields = [
+        "Total Funding", "Pre-Seed $", "Seed $", "Bridge $", "A Round $", 
+        "B Round $", "C Round $", "D Round $", "E Round $", "F Round $", 
+        "G Round $", "H Round $", "Unknown Series $", "Non-Dilutive Round $", 
+        "Exit $", "Latest Valuation", "Avg. Funding/Year", "Estimated ARR"
+    ];
+    return currencyFields.includes(field);
+};
+
+// Helper function to handle currency field sorting with MongoDB aggregation
+const handleSortingWithAggregation = async (filter, sortBy, sortDirection, skip, limit) => {
+    
+    const sort = sortDirection === 'desc' ? -1 : 1;
+
+    let pipeline = filter ? [{ $match: filter }] : [];
+    
+    // Currency field conversion for proper numeric sorting
+    pipeline = [
+        ...pipeline,
+        {
+            $addFields: {
+                numericSortField: {
+                    $cond: {
+                        if: { $eq: [{ $type: `$${sortBy}` }, "string"] },
+                        then: {
+                            $toDouble: {
+                                $cond: {
+                                    if: { $regexMatch: { input: { $ifNull: [`$${sortBy}`, "0"] }, regex: /^\$/ } },
+                                    then: { 
+                                        $replaceAll: { 
+                                            input: { $substr: [{ $ifNull: [`$${sortBy}`, "0"] }, 1, -1] },
+                                            find: ",", 
+                                            replacement: "" 
+                                        } 
+                                    },
+                                    else: { 
+                                        $replaceAll: { 
+                                            input: { $ifNull: [`$${sortBy}`, "0"] },
+                                            find: ",", 
+                                            replacement: "" 
+                                        } 
+                                    }
+                                }
+                            }
+                        },
+                        else: { $ifNull: [`$${sortBy}`, 0] }
+                    }
+                }
+            }
+        },
+        { $sort: { numericSortField: sort } },
+        { $skip: skip },
+        { $limit: parseInt(limit) }
+    ];
+    
+    const total = await Funding.countDocuments(filter || {});
+    const results = await Funding.aggregate(pipeline);
+    
+    return { records: results, total: total };
+};
+
 // Get all funding data (Public Access)
 const getFundingData = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 25;
         const skip = (page - 1) * limit;
+        const sortBy = req.query.sortBy || null;
+        const sortDirection = req.query.sortDirection || 'asc';
 
-        const total = await Funding.countDocuments();
-        const data = await Funding.find().skip(skip).limit(limit);
-        
-        res.json({ records: data, total: total });
+        // If sorting by a currency field, use aggregation pipeline
+        if (sortBy && isCurrencyField(sortBy)) {
+            const result = await handleSortingWithAggregation(
+                null, // No filter for getFundingData
+                sortBy,
+                sortDirection,
+                skip,
+                limit
+            );
+            
+            res.json({records: result.records, total: result.total});
+        } else {
+            // Standard sorting for non-currency fields
+            const sortOptions = {};
+            if (sortBy) {
+                sortOptions[sortBy] = sortDirection === 'desc' ? -1 : 1;
+            }
+
+            const total = await Funding.countDocuments();
+            const data = await Funding.find()
+                .sort(sortOptions)
+                .collation({ locale: 'en', strength: 2 })
+                .skip(skip)
+                .limit(limit);
+
+            res.json({ records: data, total: total });
+        }
     } catch (error) {
-        res.status(500).json({ message: "Server Error", error });
+        console.error("Error in getFundingData:", error);
+        res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
 
@@ -51,10 +140,8 @@ const deleteFundingData = async (req, res) => {
 // Normal Search bar (Public Access)
 const normalSearch = async (req, res) => {
     try {
-        const { query, page = 1, limit = 25 } = req.query;
+        const { query, page = 1, limit = 25, sortBy, sortDirection } = req.query;
         const skip = (parseInt(page) - 1) * parseInt(limit);
-
-        if (!query) return res.json({ records: [], total: 0 }); // Return empty array if no query
 
         const searchRegex = new RegExp(query, "i"); // Case-insensitive regex
 
@@ -71,27 +158,52 @@ const normalSearch = async (req, res) => {
             ],
         };
 
-        console.log("Search Filter:", filter); // ✅ Debugging
+        // If sorting by a currency field, use aggregation pipeline
+        if (sortBy && isCurrencyField(sortBy)) {
+            const result = await handleSortingWithAggregation(
+                filter,
+                sortBy,
+                sortDirection,
+                skip,
+                limit
+            );
+            
+            res.json(result);
+        } else {
+            // Standard sorting for non-currency fields
+            const sortOptions = {};
+            if (sortBy) {
+                sortOptions[sortBy] = sortDirection === 'desc' ? -1 : 1;
+            }
 
-        const total = await Funding.countDocuments(filter);
-        const results = await Funding.find(filter).skip(skip).limit(parseInt(limit));
-        
-        res.json({ records: results, total: total });
+            const total = await Funding.countDocuments(filter);
+            const results = await Funding.find(filter)
+                .sort(sortOptions)
+                .collation({ locale: 'en', strength: 2 })
+                .skip(skip)
+                .limit(parseInt(limit));
+
+            res.json({ records: results, total });
+        }
     } catch (error) {
-        console.error("Error in normalSearch:", error); // ❌ Log error
-        res.status(500).json({ message: "Server Error", error });
+        console.error("Error in normalSearch:", error);
+        res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
 
 // Search & Filter funding data (Public Access)
 const searchFundingData = async (req, res) => {
     try {
-        const { name, city, state, minFunding, maxFunding, fundingRounds, minYear, maxYear, 
-               minYearsActive, maxYearsActive, minFounders, maxFounders, page = 1, limit = 25 } = req.query;
-        
+        const { 
+            name, city, state, minFunding, maxFunding, fundingRounds, 
+            minYear, maxYear, minYearsActive, maxYearsActive, 
+            minFounders, maxFounders, page = 1, limit = 25,
+            sortBy, sortDirection
+        } = req.query;
+
         const skip = (parseInt(page) - 1) * parseInt(limit);
         let filter = {};
-        
+
         if (name) filter["Name"] = { $regex: name, $options: "i" };
         if (city) filter["City"] = { $regex: city, $options: "i" };
         if (state) filter["State"] = { $regex: state, $options: "i" };
@@ -144,12 +256,36 @@ const searchFundingData = async (req, res) => {
             filter._id = { $in: validIds };  // Filter by valid document IDs
         };
 
-        const total = await Funding.countDocuments(filter);
-        const results = await Funding.find(filter).skip(skip).limit(parseInt(limit));
-        
-        res.json({ records: results, total: total });
+        // If sorting by a currency field, use aggregation pipeline
+        if (sortBy && isCurrencyField(sortBy)) {
+            const result = await handleSortingWithAggregation(
+                filter,
+                sortBy,
+                sortDirection,
+                skip,
+                limit
+            );
+            
+            res.json(result);
+        } else {
+            // Standard sorting for non-currency fields
+            const sortOptions = {};
+            if (sortBy) {
+                sortOptions[sortBy] = sortDirection === 'desc' ? -1 : 1;
+            }
+
+            const total = await Funding.countDocuments(filter);
+            const results = await Funding.find(filter)
+                .sort(sortOptions)
+                .collation({ locale: 'en', strength: 2 })
+                .skip(skip)
+                .limit(parseInt(limit));
+
+            res.json({ records: results, total });
+        }
     } catch (error) {
-        res.status(500).json({ message: "Server Error", error });
+        console.error("Error in searchFundingData:", error);
+        res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
 
@@ -159,7 +295,7 @@ const exportFundingData = async (req, res) => {
         const query = req.query;
 
         // Find data based on the provided query (if any)
-        const fundingData = await FundingModel.find(query);
+        const fundingData = await Funding.find(query);
 
         if (!fundingData || fundingData.length === 0) {
             return res.status(404).json({ message: "No data available to export" });
@@ -169,7 +305,7 @@ const exportFundingData = async (req, res) => {
         const fields = Object.keys(fundingData[0].toObject());
 
         // Convert to CSV
-        const { csv, filename } = exportCSV(fundingData, fields, "exported_data.csv");
+        const { csv, filename } = ExportCSV(fundingData, fields, "exported_data.csv");
 
         // Send CSV response
         res.setHeader("Content-Type", "text/csv");

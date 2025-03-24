@@ -27,10 +27,10 @@ export const fetchFundingData = async (params = {}) => {
 };
 
 // Normal search
-export const searchFundingData = async (query, page = 1, limit = 25) => {
+export const searchFundingData = async (query, page = 1, limit = 25, sortBy = null, sortDirection = 'asc') => {
     try {
         const response = await api.get("/funding-data/search", { 
-            params: { query, page, limit } 
+            params: { query, page, limit, sortBy, sortDirection } 
         });
         console.log("Search query done", response.data); // ✅ Debugging
         return response.data;
@@ -41,10 +41,16 @@ export const searchFundingData = async (query, page = 1, limit = 25) => {
 };
 
 // Advanced search
-export const advancedSearchFundingData = async (filters, page = 1, limit = 25) => {
+export const advancedSearchFundingData = async (filters, page = 1, limit = 25, sortBy = null, sortDirection = 'asc') => {
     try {
         const response = await api.get("/funding-data/adv-search", { 
-            params: { ...filters, page, limit } 
+            params: { 
+                ...filters, 
+                page, 
+                limit,
+                sortBy,
+                sortDirection
+            } 
         });
         return response.data;
     } catch (error) {
