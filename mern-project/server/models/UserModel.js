@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { USERS_COLLECTION } = require("../config/Config");
 
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -7,4 +8,4 @@ const userSchema = new mongoose.Schema({
     role: { type: String, enum: ["admin", "user"], default: "user" },
 }, { timestamps: true }); // Role-based access control
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", userSchema, USERS_COLLECTION);

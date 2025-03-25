@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { COLLECTION_NAME } = require("../config/config");
+const { COLLECTION_NAME } = require("../config/Config");
 
 const FundingSchema = new mongoose.Schema({}, { strict: false });
 

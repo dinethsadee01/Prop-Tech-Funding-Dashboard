@@ -6,7 +6,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 // Import the required files
-const { MONGO_URI, PORT } = require("./config/config");
+const { MONGO_URI, PORT } = require("./config/Config");
 const authRoutes = require("./routes/AuthRoutes");
 const fundingRoutes = require("./routes/FundingRoutes");
 
