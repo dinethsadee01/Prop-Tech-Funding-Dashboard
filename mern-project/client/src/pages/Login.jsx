@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser, loginUser } from "../services/api";
 import "../styles/Login.css";
+import logo from "../assets/logo.svg";
 
 const Login = () => {
     const [isRegistering, setIsRegistering] = useState(false);
@@ -65,6 +66,7 @@ const Login = () => {
 
     return (
         <div className="auth-container">
+            <img src={logo} alt="logo" />
             <div className="auth-box">
                 <h2>{isRegistering ? "Register" : "Login"}</h2>
                 {error && <div className="error-message">{error}</div>}
@@ -110,7 +112,7 @@ const Login = () => {
                                 value={formData.role}
                                 onChange={handleChange}
                             >
-                                <option value="user">User</option>
+                                {/* <option value="user">User</option> */}
                                 <option value="admin">Admin</option>
                             </select>
                         </>
