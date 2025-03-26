@@ -1,0 +1,55 @@
+.dashboard {
+    font-family: Arial, sans-serif;
+}
+
+.top-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+
+.dashboard-title {
+    font-weight: bold;
+    color: #333;
+}
+
+.admin-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.admin-button:hover {
+    background-color: #0056b3;
+}
+
+.search-panel {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0 10px;
+    gap: 10px;
+}
+
+.export-btn {
+    padding: 8px 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.export-btn:hover {
+    background-color: #218838;
+}
+
+.record-info {
+    font-size: 14px;
+    margin-bottom: 10px;
+}

@@ -54,7 +54,7 @@ const Login = () => {
                 });
                 
                 console.log("Login successful", user);
-                navigate("/");
+                navigate("/ad");
             }
         } catch (err) {
             setError(err.response?.data?.message || "An error occurred. Please try again.");
