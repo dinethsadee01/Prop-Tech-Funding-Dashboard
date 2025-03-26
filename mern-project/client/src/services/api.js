@@ -138,7 +138,10 @@ export const getFundingRecordById = async (id) => {
 // Create new funding record
 export const createFundingRecord = async (data) => {
     try {
-        const response = await api.post('/funding-data', data);
+        const response = await api.post('/funding-data', data,{headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+        });
         return response.data;
     } catch (error) {
         console.error("Error creating funding record:", error);

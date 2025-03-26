@@ -10,7 +10,7 @@ const App = () => {
     <Routes>
       <Route path="/" element={<Dashboard />} />
       <Route path="/admin" element={<AdminLogin />} />
-      <Route path="/ad" element={<AdminDashboard/>} />
+      <Route path="/ad" element={localStorage.getItem('token') ? <AdminDashboard/> :<AdminLogin/>} />
       <Route path="/notFound" element={<NotFound />} />
     </Routes>
   );

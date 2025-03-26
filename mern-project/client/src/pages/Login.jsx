@@ -54,7 +54,8 @@ const Login = () => {
                 });
                 
                 console.log("Login successful", user);
-                navigate("/ad");
+                localStorage.setItem('token', token);
+                window.location.href = "/ad";
             }
         } catch (err) {
             setError(err.response?.data?.message || "An error occurred. Please try again.");
