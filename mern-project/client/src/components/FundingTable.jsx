@@ -1,4 +1,11 @@
 import React from "react";
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import "../styles/FundingTable.css";
 
 const FundingTable = ({ data, onSort, sortConfig }) => {
@@ -24,34 +31,43 @@ const FundingTable = ({ data, onSort, sortConfig }) => {
     ];
 
     return (
-        <div className="funding-table-container">
-            <table className="funding-table">
-                <thead>
-                    <tr>
-                        {columns.map((col) => (
-                            <th key={col} onClick={() => handleSort(col)}>
+        <TableContainer className="funding-table-container">
+            <Table stickyHeader className="funding-table">
+                <TableHead>
+                    <TableRow>
+                        {columns.map((col, colIndex) => (
+                            <TableCell 
+                                key={col} 
+                                onClick={() => handleSort(col)}
+                                className={colIndex === 0 ? "sticky-column" : ""}
+                            >
                                 {col} {sortConfig.key === col ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
-                            </th>
+                            </TableCell>
                         ))}
-                    </tr>
-                </thead>
-                <tbody>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
                     {data.length > 0 ? (
                         data.map((row, index) => (
-                            <tr key={index}>
-                                {columns.map((col) => (
-                                    <td key={col}>{row[col] || "-"}</td>
+                            <TableRow key={index}>
+                                {columns.map((col, colIndex) => (
+                                    <TableCell 
+                                        key={col} 
+                                        className={colIndex === 0 ? "sticky-column" : ""}
+                                    >
+                                        {row[col] || "-"}
+                                    </TableCell>
                                 ))}
-                            </tr>
+                            </TableRow>
                         ))
                     ) : (
-                        <tr>
-                            <td colSpan={columns.length} className="no-data">No data available</td>
-                        </tr>
+                        <TableRow>
+                            <TableCell colSpan={columns.length} className="no-data">No data available</TableCell>
+                        </TableRow>
                     )}
-                </tbody>
-            </table>
-        </div>
+                </TableBody>
+            </Table>
+        </TableContainer>
     );
 };
 

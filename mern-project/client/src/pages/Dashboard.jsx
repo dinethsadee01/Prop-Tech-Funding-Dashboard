@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 import { useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
 import AdvancedSearch from "../components/AdvancedSearch";
@@ -20,7 +22,7 @@ const Dashboard = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
     const navigate = useNavigate();
-    const recordsPerPage = 25; // Number of records per page
+    const recordsPerPage = 10; // Number of records per page
 
     useEffect(() => {
         const loadData = async () => {
@@ -143,7 +145,7 @@ const Dashboard = () => {
 
             {/* Table Buttons */}
             <div className="table-container">
-                <p className="record-info">{totalRecords > 0 ? `${startRecord}-${endRecord} of ${totalRecords} records` : "No records found"}</p>
+                <p className="record-info">{totalRecords > 0 ? `${startRecord}-${endRecord} of ${totalRecords} Records` : "No records found"}</p>
                 <FundingTable 
                     data={fundingData} 
                     onSort={handleSort}
@@ -151,23 +153,14 @@ const Dashboard = () => {
                 />
 
                 {/* Pagination Controls */}
-                <div className="pagination">
-                    <button
-                        className="pagination-btn"
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                        disabled={currentPage === 1}
-                    >
-                        Previous
-                    </button>
-                    <span>Page {currentPage} of {totalPages || 1}</span>
-                    <button
-                        className="pagination-btn"
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={currentPage >= totalPages || totalRecords === 0}
-                    >
-                        Next
-                    </button>
-                </div>
+                <Stack spacing={2} sx={{ 
+                    marginTop: "1rem", 
+                    display: 'flex', 
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    <Pagination color="primary" count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} />
+                </Stack>
             </div>
         </div>
     );
