@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {Pagination, Stack} from '@mui/material/';
-import { MenuFoldOutlined,MenuUnfoldOutlined,UploadOutlined,UserOutlined,VideoCameraOutlined} from '@ant-design/icons';
-import { Button, Layout, Menu, theme } from 'antd';
 import { useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
 import AdvancedSearch from "../components/AdvancedSearch";
 import FundingTable from "../components/FundingTable";
 import ExportModal from "../components/ExportModal";
 import {fetchFundingData, exportFundingData, searchFundingData, advancedSearchFundingData } from "../services/api";
-import "../styles/AdminDashboard.css";
-import "../styles/FundingTable.css";
-import "../styles/AdvancedSearch.css";
-
-const { Header, Sider, Content } = Layout;
+import "../styles/AdminDash.css";
+import logo from "../assets/logo.svg";
 
 const AdminDashboard = () => {
     const [searchQuery, setSearchQuery] = useState("");
@@ -25,10 +20,6 @@ const AdminDashboard = () => {
     const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
     const navigate = useNavigate();
     const recordsPerPage = 10; // Number of records per page
-    const [collapsed, setCollapsed] = useState(false);
-    const {
-        token: { colorBgContainer, borderRadiusLG },
-    } = theme.useToken();
 
     useEffect(() => {
         const loadData = async () => {
@@ -122,108 +113,54 @@ const AdminDashboard = () => {
     const endRecord = Math.min(currentPage * recordsPerPage, totalRecords);
 
     return (
-        <Layout className="dashboard">
-            <Sider trigger={null} collapsible collapsed={collapsed}>
-                <div className="demo-logo-vertical" />
-                <Menu
-                    theme="dark"
-                    mode="inline"
-                    defaultSelectedKeys={['1']}
-                    items={[
-                        {
-                            key: '1',
-                            icon: <UserOutlined />,
-                            label: 'All Data',
-                        },
-                        {
-                            key: '2',
-                            icon: <VideoCameraOutlined />,
-                            label: 'Company Info',
-                        },
-                        {
-                            key: '3',
-                            icon: <UploadOutlined />,
-                            label: 'Funding Data',
-                        },
-                        {
-                            key: '4',
-                            icon: <UserOutlined />,
-                            label: 'Rankings',
-                        },
-                        {
-                            key: '5',
-                            icon: <MenuFoldOutlined />,
-                            label: 'Profile',
-                        }
-                    ]}
+        <div className="adDashboard">
+            {/* Top Navigation */}
+            <div className="adTop-nav">
+                <img src={logo} alt="logo" className="adLogo" onClick={() => window.open("https://www.proptechangelgroup.com/", "_blank")} />
+                <h1 className="adDashboard-title">Funding Dashboard</h1>
+                <button className="adAdmin-button" onClick={() => navigate("/admin")}>Admin?</button>
+            </div>
+
+            {/* Normal Search and Export */}
+            <div className="adSearch-panel">
+                <SearchBar
+                    query={searchQuery}
+                    setQuery={setSearchQuery}
+                    onSearch={handleSearch}
+                    toggleAdvancedSearch={() => setIsAdvancedOpen(!isAdvancedOpen)}
                 />
-            </Sider>
-            <Layout>
-                <Header className="top-nav" style={{ padding: 0, background: colorBgContainer }}>
-                    <Button
-                        type="text"
-                        icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                        onClick={() => setCollapsed(!collapsed)}
-                        style={{
-                        fontSize: '16px',
-                        width: 64,
-                        height: 64,
-                        }}
-                    />
-                    <h1 className="dashboard-title">PropTech Funding Dashboard</h1>
-                    <button className="admin-button" onClick={() => navigate("/admin")}>Admin?</button>
-                </Header>
-                    <Content
-                        style={{
-                            margin: '24px 16px',
-                            padding: 24,
-                            minHeight: 280,
-                            background: colorBgContainer,
-                            borderRadius: borderRadiusLG,
-                        }}
-                    >
-                    {/* Normal Search and Export */}
-                    <div className="search-panel">
-                        <SearchBar
-                            query={searchQuery}
-                            setQuery={setSearchQuery}
-                            onSearch={handleSearch}
-                            toggleAdvancedSearch={() => setIsAdvancedOpen(!isAdvancedOpen)}
-                        />
-                        <button className="export-btn" onClick={handleExportClick}>Export Data CSV</button>
-                        {/* Export Confirmation Modal */}
-                        <ExportModal
-                            isOpen={isModalOpen}
-                            onClose={() => setIsModalOpen(false)}
-                            onConfirm={handleExportConfirm}
-                        />
-                    </div>
+                <button className="adExport-btn" onClick={handleExportClick}>Export Data CSV</button>
+                {/* Export Confirmation Modal */}
+                <ExportModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onConfirm={handleExportConfirm}
+                />
+            </div>
 
-                    {/* Advanced Search Panel */}
-                    {isAdvancedOpen && <AdvancedSearch onSearch={handleAdvancedSearch} />}
+            {/* Advanced Search Panel */}
+            {isAdvancedOpen && <AdvancedSearch onSearch={handleAdvancedSearch} />}
 
-                    {/* Table Buttons */}
-                    <div className="table-container">
-                        <p className="record-info">{totalRecords > 0 ? `${startRecord}-${endRecord} of ${totalRecords} Records` : "No records found"}</p>
-                        <FundingTable 
-                            data={fundingData} 
-                            onSort={handleSort}
-                            sortConfig={sortConfig}
-                        />
+            {/* Table */}
+            <div className="adTable-container">
+                <p className="adRecord-info">{totalRecords > 0 ? `${startRecord}-${endRecord} of ${totalRecords} Records` : "No records found"}</p>
+                <FundingTable 
+                    data={fundingData} 
+                    onSort={handleSort}
+                    sortConfig={sortConfig}
+                />
 
-                        {/* Pagination Controls */}
-                        <Stack spacing={2} sx={{ 
-                            marginTop: "1rem", 
-                            display: 'flex', 
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <Pagination color="primary" count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} />
-                        </Stack>
-                    </div>
-                    </Content>
-            </Layout>
-        </Layout>
+                {/* Pagination Controls */}
+                <Stack spacing={2} sx={{ 
+                    marginTop: "1rem", 
+                    display: 'flex', 
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    <Pagination color="primary" count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} />
+                </Stack>
+            </div>
+        </div>
     );
 };
 

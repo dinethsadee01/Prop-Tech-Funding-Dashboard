@@ -7,9 +7,6 @@ import FundingTable from "../components/FundingTable";
 import ExportModal from "../components/ExportModal";
 import {fetchFundingData, exportFundingData, searchFundingData, advancedSearchFundingData } from "../services/api";
 import "../styles/Dashboard.css";
-import "../styles/FundingTable.css";
-import "../styles/AdvancedSearch.css";
-
 
 const Dashboard = () => {
     const [searchQuery, setSearchQuery] = useState("");

@@ -1,9 +1,13 @@
-.dashboard {
+.adDashboard {
+    padding: 10px;
     font-family: Arial, sans-serif;
 }
 
-.top-nav {
+.adTop-nav {
     display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 1;
     align-items: center;
     justify-content: space-between;
     padding: 10px 0px;
@@ -11,12 +15,18 @@
     border-bottom: 1px solid #ddd;
 }
 
-.dashboard-title {
+.adLogo {
+    height: auto;
+    width: 150px;
+}
+
+.adDashboard-title {
+    font-size: xx-large;
     font-weight: bold;
     color: #333;
 }
 
-.admin-button {
+.adAdmin-button {
     background-color: #007bff;
     color: white;
     border: none;
@@ -25,18 +35,18 @@
     border-radius: 5px;
 }
 
-.admin-button:hover {
+.adAdmin-button:hover {
     background-color: #0056b3;
 }
 
-.search-panel {
+.adSearch-panel {
     display: flex;
     justify-content: center;
     margin: 10px 0 10px;
     gap: 10px;
 }
 
-.export-btn {
+.adExport-btn {
     padding: 8px 12px;
     background-color: #28a745;
     color: white;
@@ -45,11 +55,11 @@
     border-radius: 5px;
 }
 
-.export-btn:hover {
+.adExport-btn:hover {
     background-color: #218838;
 }
 
-.record-info {
+.adRecord-info {
     font-size: 14px;
     margin-bottom: 10px;
 }
