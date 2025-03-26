@@ -1,0 +1,36 @@
+.top-nav {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+
+.nav-logo {
+    height: auto;
+    width: 150px;
+    cursor: pointer;
+}
+
+.dashboard-title {
+    font-size: xx-large;
+    font-weight: bold;
+    color: #333;
+}
+
+.admin-button {
+    background-color: #73d13d;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.admin-button:hover {
+    background-color: #73d13d;
+}

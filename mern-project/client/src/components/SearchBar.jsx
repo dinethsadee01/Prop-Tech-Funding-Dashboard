@@ -1,4 +1,6 @@
 import React from "react";
+import { Button } from "antd";
+import { SearchOutlined  } from "@ant-design/icons";
 import "../styles/SearchBar.css";
 
 const SearchBar = ({ query, setQuery, onSearch, toggleAdvancedSearch }) => {
@@ -11,8 +13,10 @@ const SearchBar = ({ query, setQuery, onSearch, toggleAdvancedSearch }) => {
                 onChange={(e) => setQuery(e.target.value)}
             />
             <div className="search-buttons">
-                <button onClick={onSearch}>🔍 Search</button>
-                <button onClick={toggleAdvancedSearch}>Advanced Search</button>
+                <Button onClick={onSearch} type="primary" shape="circle" icon={<SearchOutlined />} size="large" />
+                <Button onClick={toggleAdvancedSearch} type="primary" shape="round" icon={<SearchOutlined  />} size="large">
+                    Advanced
+                </Button>
             </div>
         </div>
     );

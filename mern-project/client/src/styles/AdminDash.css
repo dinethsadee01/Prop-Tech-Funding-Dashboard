@@ -3,42 +3,6 @@
     font-family: Arial, sans-serif;
 }
 
-.adTop-nav {
-    display: flex;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0px;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #ddd;
-}
-
-.adLogo {
-    height: auto;
-    width: 150px;
-}
-
-.adDashboard-title {
-    font-size: xx-large;
-    font-weight: bold;
-    color: #333;
-}
-
-.adAdmin-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.adAdmin-button:hover {
-    background-color: #0056b3;
-}
-
 .adSearch-panel {
     display: flex;
     justify-content: center;

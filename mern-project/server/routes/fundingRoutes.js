@@ -1,5 +1,5 @@
 const express = require("express");
-const { getFundingData, createFundingData, updateFundingData, deleteFundingData, searchFundingData, normalSearch, exportFundingData } = require("../controllers/fundingController");
+const { getFundingData, createFundingData, updateFundingData, deleteFundingData, searchFundingData, normalSearch, exportFundingData, getFundingDataById } = require("../controllers/FundingController");
 const { authenticateUser, authorizeAdmin } = require("../middleware/AuthMiddleware");
 
 const router = express.Router();
@@ -11,6 +11,7 @@ router.get("/adv-search", searchFundingData);
 router.get("/export", exportFundingData);
 
 // ✅ Protected Routes: Only Admins can modify data
+router.get("/:id", getFundingDataById);
 router.post("/", authenticateUser, authorizeAdmin, createFundingData);
 router.put("/:id", authenticateUser, authorizeAdmin, updateFundingData);
 router.delete("/:id", authenticateUser, authorizeAdmin, deleteFundingData);

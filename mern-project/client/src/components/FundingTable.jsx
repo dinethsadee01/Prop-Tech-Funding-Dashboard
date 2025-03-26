@@ -1,5 +1,4 @@
 import React from "react";
-import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -8,7 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import "../styles/FundingTable.css";
 
-const FundingTable = ({ data, onSort, sortConfig }) => {
+const FundingTable = ({ data, onSort, sortConfig, onRowClick, isAdmin = false }) => {
     // Remove local sorting logic and use parent's sortConfig
     const handleSort = (key) => {
         let direction = "asc";
@@ -49,7 +48,12 @@ const FundingTable = ({ data, onSort, sortConfig }) => {
                 <TableBody>
                     {data.length > 0 ? (
                         data.map((row, index) => (
-                            <TableRow key={index}>
+                            <TableRow 
+                                key={index}
+                                onClick={() => isAdmin && onRowClick && onRowClick(row)}
+                                className={isAdmin ? "clickable-row" : ""}
+                                hover={isAdmin}
+                            >
                                 {columns.map((col, colIndex) => (
                                     <TableCell 
                                         key={col} 

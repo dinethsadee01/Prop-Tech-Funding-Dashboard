@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Pagination, Stack } from '@mui/material/';
+import { Button } from "antd";
+import { DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
 import AdvancedSearch from "../components/AdvancedSearch";
 import FundingTable from "../components/FundingTable";
 import ExportModal from "../components/ExportModal";
+import TopNav from "../components/TopNav";
 import {fetchFundingData, exportFundingData, searchFundingData, advancedSearchFundingData } from "../services/api";
 import "../styles/Dashboard.css";
 
@@ -75,23 +78,6 @@ const Dashboard = () => {
     const handleAdvancedSearch = async (filters) => {
         setAdvancedFilters(filters);
         setCurrentPage(1); // Reset to first page
-        // const payload = {
-        //     name: filters.name,
-        //     city: filters.city,
-        //     state: filters.state,
-        //     minFunding: filters.totalFunding[0],
-        //     maxFunding: filters.totalFunding[1],
-        //     fundingRounds: filters.fundingRounds,
-        //     minYear: filters.foundedYear[0],
-        //     maxYear: filters.foundedYear[1],
-        //     minYearsActive: filters.yearsActive[0],
-        //     maxYearsActive: filters.yearsActive[1],
-        //     minFounders: filters.numberOfFounders[0],
-        //     maxFounders: filters.numberOfFounders[1]
-        // };
-        // const data = await advancedSearchFundingData(payload, 1, recordsPerPage);
-        // setFundingData(data.records);
-        // setTotalRecords(data.total);
     };
 
     const handleExportClick = () => {
@@ -114,10 +100,7 @@ const Dashboard = () => {
     return (
         <div className="dashboard">
             {/* Top Navigation */}
-            <div className="top-nav">
-                <h1 className="dashboard-title">PropTech Funding Dashboard</h1>
-                <button className="admin-button" onClick={() => navigate("/admin")}>Admin?</button>
-            </div>
+            <TopNav />
 
             {/* Normal Search and Export */}
             <div className="search-panel">
@@ -127,7 +110,7 @@ const Dashboard = () => {
                     onSearch={handleSearch}
                     toggleAdvancedSearch={() => setIsAdvancedOpen(!isAdvancedOpen)}
                 />
-                <button className="export-btn" onClick={handleExportClick}>Export Data CSV</button>
+                <Button className="export-btn" onClick={handleExportClick} color="green" variant="solid" shape="circle" icon={<DownloadOutlined/>} size="large" />
                 {/* Export Confirmation Modal */}
                 <ExportModal
                     isOpen={isModalOpen}

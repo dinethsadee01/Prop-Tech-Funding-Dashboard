@@ -106,6 +106,16 @@ const getFundingData = async (req, res) => {
     }
 };
 
+//Get funding data by ID (Public Access)
+const getFundingDataById = async (req, res) => {
+    try {
+        const funding = await Funding.findById(req.params.id);
+        res.json(funding);
+    } catch (error) {
+        res.status(500).json({ message: "Server Error", error });
+    }
+};
+
 // Create new funding entry (Admin Only)
 const createFundingData = async (req, res) => {
     try {
@@ -289,6 +299,7 @@ const searchFundingData = async (req, res) => {
     }
 };
 
+// Export funding data to CSV (Public Access)
 const exportFundingData = async (req, res) => {
     try {
         // Get search/filter/sort parameters from the frontend
@@ -317,4 +328,4 @@ const exportFundingData = async (req, res) => {
     }
 };
 
-module.exports = { getFundingData, createFundingData, updateFundingData, deleteFundingData, searchFundingData, normalSearch, exportFundingData };
+module.exports = { getFundingData, getFundingDataById, createFundingData, updateFundingData, deleteFundingData, searchFundingData, normalSearch, exportFundingData };

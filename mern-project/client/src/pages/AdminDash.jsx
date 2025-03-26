@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import {Pagination, Stack} from '@mui/material/';
 import { useNavigate } from "react-router-dom";
+import { DownloadOutlined, PlusOutlined } from '@ant-design/icons';
 import SearchBar from "../components/SearchBar";
 import AdvancedSearch from "../components/AdvancedSearch";
 import FundingTable from "../components/FundingTable";
 import ExportModal from "../components/ExportModal";
+import EditorModel from "../components/EditorModel";
+import TopNav from "../components/TopNav";
+import CreateRecordModal from "../components/CreateRecordModal";
 import {fetchFundingData, exportFundingData, searchFundingData, advancedSearchFundingData } from "../services/api";
 import "../styles/AdminDash.css";
-import logo from "../assets/logo.svg";
+import { Button } from "antd";
 
 const AdminDashboard = () => {
     const [searchQuery, setSearchQuery] = useState("");
@@ -18,6 +22,9 @@ const AdminDashboard = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+    const [selectedRecord, setSelectedRecord] = useState(null);
+    const [editorVisible, setEditorVisible] = useState(false);
+    const [createModalVisible, setCreateModalVisible] = useState(false);
     const navigate = useNavigate();
     const recordsPerPage = 10; // Number of records per page
 
@@ -76,23 +83,6 @@ const AdminDashboard = () => {
     const handleAdvancedSearch = async (filters) => {
         setAdvancedFilters(filters);
         setCurrentPage(1); // Reset to first page
-        // const payload = {
-        //     name: filters.name,
-        //     city: filters.city,
-        //     state: filters.state,
-        //     minFunding: filters.totalFunding[0],
-        //     maxFunding: filters.totalFunding[1],
-        //     fundingRounds: filters.fundingRounds,
-        //     minYear: filters.foundedYear[0],
-        //     maxYear: filters.foundedYear[1],
-        //     minYearsActive: filters.yearsActive[0],
-        //     maxYearsActive: filters.yearsActive[1],
-        //     minFounders: filters.numberOfFounders[0],
-        //     maxFounders: filters.numberOfFounders[1]
-        // };
-        // const data = await advancedSearchFundingData(payload, 1, recordsPerPage);
-        // setFundingData(data.records);
-        // setTotalRecords(data.total);
     };
 
     const handleExportClick = () => {
@@ -108,6 +98,64 @@ const AdminDashboard = () => {
         setSortConfig({ key, direction });
     };
 
+    const handleRowClick = (record) => {
+        setSelectedRecord(record);
+        setEditorVisible(true);
+    };
+
+    const handleEditorClose = () => {
+        setEditorVisible(false);
+        setSelectedRecord(null);
+    };
+
+    const handleCreateRecord = () => {
+        setCreateModalVisible(true);
+    };
+
+    const handleCreateModalClose = () => {
+        setCreateModalVisible(false);
+    };
+
+    const refreshData = async () => {
+        try {
+            // Reload data after update or delete
+            if (searchQuery) {
+                const data = await searchFundingData(searchQuery, currentPage, recordsPerPage, sortConfig.key, sortConfig.direction);
+                setFundingData(data.records);
+                setTotalRecords(data.total);
+            } else if (Object.keys(advancedFilters).length > 0) {
+                const payload = {
+                    name: advancedFilters.name,
+                    city: advancedFilters.city,
+                    state: advancedFilters.state,
+                    minFunding: advancedFilters.totalFunding?.[0],
+                    maxFunding: advancedFilters.totalFunding?.[1],
+                    fundingRounds: advancedFilters.fundingRounds,
+                    minYear: advancedFilters.foundedYear?.[0],
+                    maxYear: advancedFilters.foundedYear?.[1],
+                    minYearsActive: advancedFilters.yearsActive?.[0],
+                    maxYearsActive: advancedFilters.yearsActive?.[1],
+                    minFounders: advancedFilters.numberOfFounders[0],
+                    maxFounders: advancedFilters.numberOfFounders[1]
+                };
+                const data = await advancedSearchFundingData(payload, currentPage, recordsPerPage, sortConfig.key, sortConfig.direction);
+                setFundingData(data.records);
+                setTotalRecords(data.total);
+            } else {
+                const res = await fetchFundingData({ 
+                    page: currentPage, 
+                    limit: recordsPerPage,
+                    sortBy: sortConfig.key,
+                    sortDirection: sortConfig.direction
+                });
+                setFundingData(res.records);
+                setTotalRecords(res.total);
+            }
+        } catch (error) {
+            console.error("Error refreshing data:", error);
+        }
+    };
+
     const totalPages = Math.ceil(totalRecords / recordsPerPage);
     const startRecord = (currentPage - 1) * recordsPerPage + 1;
     const endRecord = Math.min(currentPage * recordsPerPage, totalRecords);
@@ -115,11 +163,7 @@ const AdminDashboard = () => {
     return (
         <div className="adDashboard">
             {/* Top Navigation */}
-            <div className="adTop-nav">
-                <img src={logo} alt="logo" className="adLogo" onClick={() => window.open("https://www.proptechangelgroup.com/", "_blank")} />
-                <h1 className="adDashboard-title">Funding Dashboard</h1>
-                <button className="adAdmin-button" onClick={() => navigate("/admin")}>Admin?</button>
-            </div>
+            <TopNav adminButtonText="Log Out" onAdminClick={() => navigate("/")} />
 
             {/* Normal Search and Export */}
             <div className="adSearch-panel">
@@ -129,12 +173,19 @@ const AdminDashboard = () => {
                     onSearch={handleSearch}
                     toggleAdvancedSearch={() => setIsAdvancedOpen(!isAdvancedOpen)}
                 />
-                <button className="adExport-btn" onClick={handleExportClick}>Export Data CSV</button>
+                <Button className="adCreate-btn" onClick={handleCreateRecord} type="primary" shape="circle" icon={<PlusOutlined />} size="large" />
+                <Button className="adExport-btn" onClick={handleExportClick} type="primary" shape="circle" icon={<DownloadOutlined/>} size="large" />
                 {/* Export Confirmation Modal */}
                 <ExportModal
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
                     onConfirm={handleExportConfirm}
+                />
+                {/* Create Record Modal */}
+                <CreateRecordModal
+                    visible={createModalVisible}
+                    onClose={handleCreateModalClose}
+                    onRecordUpdate={refreshData}
                 />
             </div>
 
@@ -148,6 +199,16 @@ const AdminDashboard = () => {
                     data={fundingData} 
                     onSort={handleSort}
                     sortConfig={sortConfig}
+                    onRowClick={handleRowClick}
+                    isAdmin={true}
+                />
+
+                {/* Editor Modal */}
+                <EditorModel 
+                    record={selectedRecord}
+                    visible={editorVisible}
+                    onClose={handleEditorClose}
+                    onRecordUpdate={refreshData}
                 />
 
                 {/* Pagination Controls */}

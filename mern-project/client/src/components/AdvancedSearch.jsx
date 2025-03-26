@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Range } from "react-range";
+import { Button } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import "../styles/AdvancedSearch.css";
 
 const AdvancedSearch = ({ onSearch }) => {
@@ -168,8 +170,8 @@ const AdvancedSearch = ({ onSearch }) => {
 
                 {/* Buttons */}
                 <div className="button-group">
-                    <button type="submit">Search</button>
-                    <button type="button" onClick={handleClearFilters} className="clear-button">Clear Filters</button>
+                    <Button onClick={onSearch} htmlType="submit" shape="round" icon={<SearchOutlined />} size="large" >Apply</Button>
+                    <Button type="primary" shape="round" onClick={handleClearFilters} className="clear-button" size="large" danger>Clear</Button>
                 </div>
             </form>
         </div>

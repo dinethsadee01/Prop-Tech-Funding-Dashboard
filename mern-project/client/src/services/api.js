@@ -124,4 +124,48 @@ export const exportFundingData = async (filters) => {
     }
 };
 
+// Get funding data by ID
+export const getFundingRecordById = async (id) => {
+    try {
+        const response = await api.get(`/funding-data/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching record by ID:", error);
+        throw error;
+    }
+};
+
+// Create new funding record
+export const createFundingRecord = async (data) => {
+    try {
+        const response = await api.post('/funding-data', data);
+        return response.data;
+    } catch (error) {
+        console.error("Error creating funding record:", error);
+        throw error;
+    }
+};
+
+// Update funding record
+export const updateFundingRecord = async (id, data) => {
+    try {
+        const response = await api.put(`/funding-data/${id}`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating funding record:", error);
+        throw error;
+    }
+};
+
+// Delete funding record
+export const deleteFundingRecord = async (id) => {
+    try {
+        const response = await api.delete(`/funding-data/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error deleting funding record:", error);
+        throw error;
+    }
+};
+
 export default api;
