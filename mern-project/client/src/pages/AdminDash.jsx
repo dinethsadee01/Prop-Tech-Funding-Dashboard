@@ -16,7 +16,7 @@ import { Button } from "antd";
 const AdminDashboard = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [advancedFilters, setAdvancedFilters] = useState({});
-    const [fundingData, setFundingData] = useState([] || []);
+    const [fundingData, setFundingData] = useState([]);
     const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
     const [totalRecords, setTotalRecords] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
@@ -78,6 +78,11 @@ const AdminDashboard = () => {
         const data = await searchFundingData(searchQuery, 1, recordsPerPage);
         setFundingData(data.records);
         setTotalRecords(data.total);
+    };
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate("/");
     };
 
     const handleAdvancedSearch = async (filters) => {
@@ -163,7 +168,7 @@ const AdminDashboard = () => {
     return (
         <div className="adDashboard">
             {/* Top Navigation */}
-            <TopNav adminButtonText="Log Out" onAdminClick={() => navigate("/")} />
+            <TopNav adminButtonText="Log Out" onAdminClick={() => handleLogout()} />
 
             {/* Normal Search and Export */}
             <div className="adSearch-panel">

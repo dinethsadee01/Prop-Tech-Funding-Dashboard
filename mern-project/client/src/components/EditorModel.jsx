@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Form, Input, Spin, message } from 'antd';
+import { Button, Modal, Form, Input, Spin, message,Popconfirm } from 'antd';
 import { updateFundingRecord, deleteFundingRecord } from '../services/api';
 
 const EditorModel = ({ record, visible, onClose, onRecordUpdate }) => {
@@ -83,15 +83,24 @@ const EditorModel = ({ record, visible, onClose, onRecordUpdate }) => {
       onCancel={onClose}
       width={800}
       footer={[
+        <>
         <Button key="cancel" shape='round' onClick={onClose}>
           Cancel
-        </Button>,
-        <Button key="delete" shape='round' danger onClick={handleDelete} loading={loading}>
+        </Button>
+        <Popconfirm
+        title="Delete this record?"
+        description="This action cannot be undone."
+        onConfirm={handleDelete}
+        onOpenChange={() => {}}
+      >
+        <Button key="delete" shape='round' danger loading={loading}>
           Delete Record
-        </Button>,
+        </Button>
+      </Popconfirm>
         <Button key="update" shape='round' type="primary" onClick={handleUpdate} loading={loading}>
           Update Record
-        </Button>,
+        </Button>
+        </>
       ]}
     >
       {loading ? (
