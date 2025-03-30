@@ -127,7 +127,11 @@ export const exportFundingData = async (filters) => {
 // Get funding data by ID
 export const getFundingRecordById = async (id) => {
     try {
-        const response = await api.get(`/funding-data/${id}`);
+        const response = await api.get(`/funding-data/${id}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         return response.data;
     } catch (error) {
         console.error("Error fetching record by ID:", error);
@@ -135,12 +139,28 @@ export const getFundingRecordById = async (id) => {
     }
 };
 
+// Get funding data by name
+export const getFundingRecordByName = async (name) => {
+    try {
+        const response = await api.get(`/funding-data/name/${name}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching record by name:", error);
+        throw error;
+    }
+};
+
 // Create new funding record
 export const createFundingRecord = async (data) => {
     try {
-        const response = await api.post('/funding-data', data,{headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
+        const response = await api.post('/funding-data', data, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
         });
         return response.data;
     } catch (error) {
@@ -152,7 +172,11 @@ export const createFundingRecord = async (data) => {
 // Update funding record
 export const updateFundingRecord = async (id, data) => {
     try {
-        const response = await api.put(`/funding-data/${id}`, data);
+        const response = await api.put(`/funding-data/${id}`, data, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         return response.data;
     } catch (error) {
         console.error("Error updating funding record:", error);
@@ -163,7 +187,11 @@ export const updateFundingRecord = async (id, data) => {
 // Delete funding record
 export const deleteFundingRecord = async (id) => {
     try {
-        const response = await api.delete(`/funding-data/${id}`);
+        const response = await api.delete(`/funding-data/${id}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         return response.data;
     } catch (error) {
         console.error("Error deleting funding record:", error);

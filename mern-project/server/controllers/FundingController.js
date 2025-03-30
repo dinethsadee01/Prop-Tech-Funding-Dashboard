@@ -116,6 +116,19 @@ const getFundingDataById = async (req, res) => {
     }
 };
 
+// Get funding data by name (Admin Only)
+const getFundingDataByName = async (req, res) => {
+    try {
+        const funding = await Funding.findOne({ Name: req.params.name });
+        if (!funding) {
+            return res.status(404).json({ message: "Funding data not found" });
+        }
+        res.json(funding);
+    } catch (error) {
+        res.status(500).json({ message: "Server Error", error });
+    }
+};
+
 // Create new funding entry (Admin Only)
 const createFundingData = async (req, res) => {
     try {
@@ -328,4 +341,4 @@ const exportFundingData = async (req, res) => {
     }
 };
 
-module.exports = { getFundingData, getFundingDataById, createFundingData, updateFundingData, deleteFundingData, searchFundingData, normalSearch, exportFundingData };
+module.exports = { getFundingData, getFundingDataById, getFundingDataByName, createFundingData, updateFundingData, deleteFundingData, searchFundingData, normalSearch, exportFundingData };

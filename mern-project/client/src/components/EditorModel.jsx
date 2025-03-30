@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Form, Input, Spin, message,Popconfirm } from 'antd';
+import { Button, Modal, Form, Input, Spin, message, Popconfirm } from 'antd';
 import { updateFundingRecord, deleteFundingRecord } from '../services/api';
 
 const EditorModel = ({ record, visible, onClose, onRecordUpdate }) => {

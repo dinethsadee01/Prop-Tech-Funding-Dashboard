@@ -79,11 +79,6 @@ const AdminDashboard = () => {
         setFundingData(data.records);
         setTotalRecords(data.total);
     };
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate("/");
-    };
 
     const handleAdvancedSearch = async (filters) => {
         setAdvancedFilters(filters);
@@ -168,7 +163,7 @@ const AdminDashboard = () => {
     return (
         <div className="adDashboard">
             {/* Top Navigation */}
-            <TopNav adminButtonText="Log Out" onAdminClick={() => handleLogout()} />
+            <TopNav adminButtonText="Log Out" isAdmin={true} />
 
             {/* Normal Search and Export */}
             <div className="adSearch-panel">
