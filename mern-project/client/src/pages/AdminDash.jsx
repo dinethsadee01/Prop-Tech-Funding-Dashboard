@@ -9,7 +9,7 @@ import ExportModal from "../components/ExportModal";
 import EditorModel from "../components/EditorModel";
 import TopNav from "../components/TopNav";
 import CreateRecordModal from "../components/CreateRecordModal";
-import {fetchFundingData, exportFundingData, searchFundingData, advancedSearchFundingData } from "../services/api";
+import {fetchFundingData, exportFundingData, searchFundingData, advancedSearchFundingData, getFundingRecordById} from "../services/api";
 import "../styles/AdminDash.css";
 import { Button } from "antd";
 
@@ -98,9 +98,14 @@ const AdminDashboard = () => {
         setSortConfig({ key, direction });
     };
 
-    const handleRowClick = (record) => {
-        setSelectedRecord(record);
-        setEditorVisible(true);
+    const handleRowClick = async (record) => {
+        try {
+            const fullRecord = await getFundingRecordById(record._id);
+            setSelectedRecord(fullRecord);
+            setEditorVisible(true);
+        } catch (error) {
+            console.error("Error fetching record:", error);
+        }
     };
 
     const handleEditorClose = () => {

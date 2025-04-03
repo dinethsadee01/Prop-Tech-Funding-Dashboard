@@ -21,7 +21,7 @@ const EditorModel = ({ record, visible, onClose, onRecordUpdate }) => {
   
   useEffect(() => {
     if (record && visible) {
-      // Fill the form with record data
+      form.resetFields();
       form.setFieldsValue(record);
     }
   }, [record, visible, form]);
