@@ -2,72 +2,14 @@ import React, { useState } from 'react';
 import { Button, Modal, Form, Input, Spin, message, DatePicker, InputNumber } from 'antd';
 import { createFundingRecord } from '../services/api';
 import moment from 'moment';
+import { columnDefinitions } from '../../../shared/config/column.config';
 
 const CreateRecordModal = ({ visible, onClose, onRecordUpdate }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   
-  // Define all possible columns from FundingTable with their types
-  const columns = [
-    { name: "Name", type: "STRING" },
-    { name: "Technology", type: "STRING" },
-    { name: "Prop Type", type: "STRING" },
-    { name: "AngelList", type: "STRING" },
-    { name: "Crunchbase", type: "STRING" },
-    { name: "Domain", type: "STRING" },
-    { name: "HQ Address", type: "STRING" },
-    { name: "City", type: "STRING" },
-    { name: "State", type: "STRING" },
-    { name: "Zip", type: "NUMBER" },
-    { name: "# Founders", type: "NUMBER" },
-    { name: "Founded", type: "YEAR" },
-    { name: "Years Active", type: "NUMBER" },
-    { name: "# of Funding Rounds", type: "NUMBER" },
-    { name: "Valuation Rank", type: "NUMBER" },
-    { name: "Funding/Year Rank", type: "NUMBER" },
-    { name: "Total Funding Rank", type: "NUMBER" },
-    { name: "ARR Rank", type: "NUMBER" },
-    { name: "CAFR Rank", type: "NUMBER" },
-    { name: "Avg. Funding/Year", type: "CURRENCY" },
-    { name: "ARR/Funds Raised", type: "CURRENCY" },
-    { name: "Total Funding", type: "CURRENCY" },
-    { name: "Estimated ARR", type: "CURRENCY" },
-    { name: "CFRGR (Compound Funding Round Growth Rate)", type: "PERCENTAGE" },
-    { name: "CAFR", type: "PERCENTAGE" },
-    { name: "Latest Valuation", type: "CURRENCY" },
-    { name: "Latest Valuation Year", type: "YEAR" },
-    { name: "Accelerator", type: "STRING" },
-    { name: "Accelerator 2", type: "STRING" },
-    { name: "Pre-Seed Date", type: "DATE" },
-    { name: "Pre-Seed $", type: "CURRENCY" },
-    { name: "Seed Date", type: "DATE" },
-    { name: "Seed $", type: "CURRENCY" },
-    { name: "Bridge Date", type: "DATE" },
-    { name: "Bridge $", type: "CURRENCY" },
-    { name: "A Round Date", type: "DATE" },
-    { name: "A Round $", type: "CURRENCY" },
-    { name: "B Round Date", type: "DATE" },
-    { name: "B Round $", type: "CURRENCY" },
-    { name: "C Round Date", type: "DATE" },
-    { name: "C Round $", type: "CURRENCY" },
-    { name: "D Round Date", type: "DATE" },
-    { name: "D Round $", type: "CURRENCY" },
-    { name: "E Round Date", type: "DATE" },
-    { name: "E Round $", type: "CURRENCY" },
-    { name: "F Round Date", type: "DATE" },
-    { name: "F Round $", type: "CURRENCY" },
-    { name: "G Round Date", type: "DATE" },
-    { name: "G Round $", type: "CURRENCY" },
-    { name: "H Round Date", type: "DATE" },
-    { name: "H Round $", type: "CURRENCY" },
-    { name: "Unknown Series Date", type: "DATE" },
-    { name: "Unknown Series $", type: "CURRENCY" },
-    { name: "Non-Dilutive Round Date", type: "DATE" },
-    { name: "Non-Dilutive Round $", type: "CURRENCY" },
-    { name: "Exit Date", type: "DATE" },
-    { name: "Exit $", type: "CURRENCY" },
-    { name: "Acquirer", type: "STRING" }
-  ];
+  // Use imported column definitions with types
+  const columns = columnDefinitions;
 
   // Format value based on column type
   const formatValue = (value, type) => {

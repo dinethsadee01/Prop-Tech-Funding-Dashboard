@@ -1,14 +1,9 @@
 const Funding = require("../models/FundingModel");
 const ExportCSV = require("../utils/exportCSV");
+const { currencyFields } = require("../../shared/config/column.config");
 
 // Helper function to check if a field is a currency field
 const isCurrencyField = (field) => {
-    const currencyFields = [
-        "Total Funding", "Pre-Seed $", "Seed $", "Bridge $", "A Round $", 
-        "B Round $", "C Round $", "D Round $", "E Round $", "F Round $", 
-        "G Round $", "H Round $", "Unknown Series $", "Non-Dilutive Round $", 
-        "Exit $", "Latest Valuation", "Avg. Funding/Year", "Estimated ARR"
-    ];
     return currencyFields.includes(field);
 };
 
