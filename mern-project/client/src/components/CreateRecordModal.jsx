@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal, Form, Input, Spin, message, DatePicker, InputNumber } from 'antd';
 import { createFundingRecord } from '../services/api';
+import moment from 'moment';
 
 const CreateRecordModal = ({ visible, onClose, onRecordUpdate }) => {
   const [form] = Form.useForm();
@@ -17,9 +18,9 @@ const CreateRecordModal = ({ visible, onClose, onRecordUpdate }) => {
     { name: "HQ Address", type: "STRING" },
     { name: "City", type: "STRING" },
     { name: "State", type: "STRING" },
-    { name: "Zip", type: "STRING" },
+    { name: "Zip", type: "NUMBER" },
     { name: "# Founders", type: "NUMBER" },
-    { name: "Founded", type: "DATE" },
+    { name: "Founded", type: "YEAR" },
     { name: "Years Active", type: "NUMBER" },
     { name: "# of Funding Rounds", type: "NUMBER" },
     { name: "Valuation Rank", type: "NUMBER" },
@@ -31,10 +32,10 @@ const CreateRecordModal = ({ visible, onClose, onRecordUpdate }) => {
     { name: "ARR/Funds Raised", type: "CURRENCY" },
     { name: "Total Funding", type: "CURRENCY" },
     { name: "Estimated ARR", type: "CURRENCY" },
-    { name: "CFRGR (Compound Funding Round Growth Rate)", type: "NUMBER" },
-    { name: "CAFR", type: "CURRENCY" },
+    { name: "CFRGR (Compound Funding Round Growth Rate)", type: "PERCENTAGE" },
+    { name: "CAFR", type: "PERCENTAGE" },
     { name: "Latest Valuation", type: "CURRENCY" },
-    { name: "Latest Valuation Year", type: "DATE" },
+    { name: "Latest Valuation Year", type: "YEAR" },
     { name: "Accelerator", type: "STRING" },
     { name: "Accelerator 2", type: "STRING" },
     { name: "Pre-Seed Date", type: "DATE" },
@@ -68,19 +69,68 @@ const CreateRecordModal = ({ visible, onClose, onRecordUpdate }) => {
     { name: "Acquirer", type: "STRING" }
   ];
 
+  // Format value based on column type
+  const formatValue = (value, type) => {
+    if (!value && value !== 0) return value;
+    
+    switch (type) {
+      case "YEAR":
+        // Handle dayjs object from Ant Design DatePicker
+        if (value.$d) {
+          return moment(value.$d).format("YYYY");
+        }
+        // Handle moment object
+        if (moment.isMoment(value)) {
+          return value.format("YYYY");
+        }
+        // Handle string dates
+        return moment(value).format("YYYY");
+        
+      case "DATE":
+        // Handle dayjs object from Ant Design DatePicker
+        if (value.$d) {
+          return moment(value.$d).format("MMMM DD, YYYY");
+        }
+        // Handle moment object
+        if (moment.isMoment(value)) {
+          return value.format("MMMM DD, YYYY");
+        }
+        // Handle string dates
+        return moment(value).format("MMMM DD, YYYY");
+        
+      case "PERCENTAGE":
+        return `${value}%`; // Add % sign
+        
+      case "CURRENCY":
+        return `$${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`; // Format as $X,XXX,XXX
+        
+      default:
+        return value;
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       setLoading(true);
       const values = await form.validateFields();
       
-      // Filter out empty fields to keep database clean
-      const filteredValues = Object.fromEntries(
-        Object.entries(values).filter(([_, value]) => 
-          value !== undefined && value !== null && value !== ''
-        )
-      );
+      const formattedValues = {};
       
-      await createFundingRecord(filteredValues);
+      // Process each field and format based on type
+      Object.entries(values).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          // Find column type by name
+          const column = columns.find(col => col.name === key);
+          if (column) {
+            const formattedValue = formatValue(value, column.type);
+            formattedValues[key] = formattedValue;
+          } else {
+            formattedValues[key] = value;
+          }
+        }
+      });
+      
+      await createFundingRecord(formattedValues);
       message.success('Record created successfully');
       form.resetFields(); // Clear the form
       onRecordUpdate(); // Refresh the data in parent component
@@ -96,9 +146,26 @@ const CreateRecordModal = ({ visible, onClose, onRecordUpdate }) => {
   const renderFormItems = () => {
     // Render form items for all possible columns based on their types
     return columns.map(column => (
-      <Form.Item key={column.name} label={column.name} name={column.name}>
+      <Form.Item
+        key={column.name}
+        label={column.name}
+        name={column.name}
+        getValueFromEvent={
+          column.type === "DATE" || column.type === "YEAR" 
+            ? (date) => date // Return the date object directly, don't convert to string
+            : undefined // Use default behavior for other fields
+        }
+      >
         {column.type === "STRING" && <Input />}
-        {column.type === "DATE" && <DatePicker style={{ width: '100%' }} />}
+        {column.type === "DATE" && <DatePicker style={{ width: '100%' }} format="MMMM DD, YYYY" />}
+        {column.type === "YEAR" && <DatePicker.YearPicker style={{ width: '100%' }} format="YYYY" />}
+        {column.type === "PERCENTAGE" && (
+          <InputNumber
+            style={{ width: '100%' }}
+            formatter={value => `${value}%`}
+            parser={value => value.replace('%', '')}
+          />
+        )}
         {column.type === "NUMBER" && <InputNumber style={{ width: '100%' }} />}
         {column.type === "CURRENCY" && (
           <InputNumber

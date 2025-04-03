@@ -140,19 +140,19 @@ export const getFundingRecordById = async (id) => {
 };
 
 // Get funding data by name
-export const getFundingRecordByName = async (name) => {
-    try {
-        const response = await api.get(`/funding-data/name/${name}`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-        });
-        return response.data;
-    } catch (error) {
-        console.error("Error fetching record by name:", error);
-        throw error;
-    }
-};
+// export const getFundingRecordByName = async (name) => {
+//     try {
+//         const response = await api.get(`/funding-data/name/${name}`, {
+//             headers: {
+//                 Authorization: `Bearer ${localStorage.getItem('token')}`
+//             }
+//         });
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error fetching record by name:", error);
+//         throw error;
+//     }
+// };
 
 // Create new funding record
 export const createFundingRecord = async (data) => {
